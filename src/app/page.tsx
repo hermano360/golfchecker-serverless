@@ -5,8 +5,10 @@ import Link from "next/link";
 import paths from "@/paths";
 import AlertList from "@/components/alerts/alert-list";
 import { fetchAlertsByUser } from "@/db/queries/alerts";
+import { Api } from "sst/node/api";
 
 export default async function Home() {
+  console.log(Api.api.url);
   return (
     <div className="grid grid-cols-4 gap-4 p-4">
       <div className="col-span-3">
