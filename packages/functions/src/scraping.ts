@@ -8,7 +8,6 @@ import { setEntryItemUtil } from "../../utils/entities";
 
 export const initializeScrape = ApiHandler(async (evt) => {
   try {
-    console.log("fetching scrape");
     const scrapingText = await fetchScraping("03/01/2024", 3);
 
     const root = parse(scrapingText);
@@ -58,8 +57,6 @@ export const initializeScrape = ApiHandler(async (evt) => {
         is9Holes,
       };
     });
-
-    console.log("generated entries");
 
     const { updatedAt } = await setLatestUpdatedAt();
     console.log("generated updatedAt time");
