@@ -28,6 +28,10 @@ export default {
           "GET /": "packages/functions/src/time.handler",
           "GET /updatedAt": "packages/functions/src/updatedAt.getLatest",
           "POST /updatedAt": "packages/functions/src/updatedAt.setLatest",
+          "GET /courses": "packages/functions/src/courses.fetchCourses",
+          "POST /entities": "packages/functions/src/entities.fetchEntities",
+          "POST /entities/set": "packages/functions/src/entities.setEntities",
+          "POST /scraping": "packages/functions/src/scraping.initializeScrape",
         },
       });
       const site = new NextjsSite(stack, "site", { bind: [api] });
