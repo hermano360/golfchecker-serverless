@@ -1,9 +1,8 @@
 "use server";
 
 import { auth } from "@/auth";
-import { db } from "@/db";
 import paths from "@/paths";
-import { Alert } from "@prisma/client";
+import axios from "axios";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -18,6 +17,21 @@ interface DeleteAlertFormState {
     _form?: string[];
   };
 }
+
+const deleteAlertById = (userId: string, alertId: string) => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+  return new Promise((resolve, reject) => {
+    axios
+      .delete(`${apiUrl}/alerts/${userId}/${alertId}`)
+      .then(function (response) {
+        resolve(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+  });
+};
 
 export async function deleteAlert(
   { alertId }: { alertId: string },
@@ -34,12 +48,17 @@ export async function deleteAlert(
     };
   }
 
-  try {
-    await db.alert.delete({
-      where: {
-        id: result.data.alertId,
+  const session = await auth();
+  if (!session || !session.user) {
+    return {
+      errors: {
+        _form: ["You must be signed in to do this"],
       },
-    });
+    };
+  }
+
+  try {
+    await deleteAlertById(session.user.id, alertId);
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {

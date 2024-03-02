@@ -10,9 +10,23 @@ export const alertTimeFormatter = (time: number) => {
     .padStart(2, "0")} ${isMorning ? "AM" : "PM"}`;
 };
 
-export const formatDateDisplay = (date: string) =>
-  new Intl.DateTimeFormat("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(new Date(date));
+export const formatDateDisplay = (date: string) => {
+  const [year, month, day] = date.split("-");
+
+  const monthMap = {
+    "01": "January",
+    "02": "February",
+    "03": "March",
+    "04": "April",
+    "05": "May",
+    "06": "June",
+    "07": "July",
+    "08": "August",
+    "09": "September",
+    "10": "October",
+    "11": "November",
+    "12": "December",
+  };
+
+  return `${monthMap[month]} ${parseInt(day)}, ${year}`;
+};

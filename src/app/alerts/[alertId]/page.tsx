@@ -1,6 +1,6 @@
 import { fetchAlertsById } from "@/db/queries/alerts";
 import { fetchCourses } from "@/db/queries/courses";
-import { alertTimeFormatter, formatDateDisplay } from "@/utils/dates";
+import { formatDateDisplay } from "@/utils/dates";
 import AlertDeleteForm from "@/components/alerts/alerts-delete-form";
 
 interface AlertsShowPageProps {
@@ -13,7 +13,7 @@ export default async function AlertsShowPage({ params }: AlertsShowPageProps) {
   const { alertId } = params;
 
   const alert = await fetchAlertsById(alertId);
-  const courses = fetchCourses();
+  const courses = await fetchCourses();
 
   const course = courses.find(({ id }) => id === alert.courseId);
 
@@ -25,11 +25,7 @@ export default async function AlertsShowPage({ params }: AlertsShowPageProps) {
         <div className="text-md font-bold">{`${formatDateDisplay(
           alert.startDate
         )}  -  ${formatDateDisplay(alert.endDate)}`}</div>
-        <div>
-          {`${alertTimeFormatter(alert.startTime)}  -  ${alertTimeFormatter(
-            alert.endTime
-          )}`}
-        </div>
+        <div>{`${alert.startTime}  -  ${alert.endTime}`}</div>
       </div>
       <AlertDeleteForm alertId={alertId} />
     </div>

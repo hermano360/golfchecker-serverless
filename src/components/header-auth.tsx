@@ -10,9 +10,11 @@ import {
 } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import * as actions from "@/actions";
+import { useRegisterUser } from "@/hooks/use-register-user";
 
 export default function HeaderAuth() {
   const session = useSession();
+  useRegisterUser();
 
   if (session.status === "loading") {
     return null;
@@ -37,7 +39,7 @@ export default function HeaderAuth() {
         <NavbarItem>
           <form action={actions.signIn}>
             <Button type="submit" color="secondary" variant="bordered">
-              Sign in
+              Sign Up
             </Button>
           </form>
         </NavbarItem>

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/app/providers";
 import Header from "@/components/header";
+import { cookies } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"] });
 

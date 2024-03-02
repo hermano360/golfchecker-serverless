@@ -9,24 +9,20 @@ interface AlertListProps {
 
 export default async function AlertList({ fetchData }: AlertListProps) {
   const alerts = await fetchData();
-  const courses = fetchCourses();
+  const courses = await fetchCourses();
 
-  const renderedAlerts = alerts.map((alert) => {
+  const renderedAlerts = alerts.map((alert, i) => {
     const course = courses.find(({ id }) => id === alert.courseId);
 
     return (
-      <Link key={alert.id} href={`/alerts/${alert.id}`}>
+      <Link key={alert.id || i} href={`/alerts/${alert.id}`}>
         <div className="border rounded p-2 mb-2">
           {course ? <h1 className="text-lg mb-1">{course.name}</h1> : null}
 
           <div className="text-md font-bold">{`${formatDateDisplay(
             alert.startDate
           )}  -  ${formatDateDisplay(alert.endDate)}`}</div>
-          <div>
-            {`${alertTimeFormatter(alert.startTime)}  -  ${alertTimeFormatter(
-              alert.endTime
-            )}`}
-          </div>
+          <div>{`${alert.startTime}  -  ${alert.endTime}`}</div>
         </div>
       </Link>
     );

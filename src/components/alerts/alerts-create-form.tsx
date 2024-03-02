@@ -9,7 +9,7 @@ import { useState } from "react";
 import { fetchCourses } from "@/db/queries/courses";
 import { ErrorMessage } from "../common/error-message";
 
-export default function AlertCreateForm() {
+export default function AlertCreateForm({ courses = [] }) {
   const [formState, action] = useFormState(actions.createAlert, { errors: {} });
 
   const [startDate, setStartDate] = useState(today(getLocalTimeZone()));
@@ -21,8 +21,6 @@ export default function AlertCreateForm() {
     setStartDate(start);
     setEndDate(end);
   };
-
-  const courses = fetchCourses();
 
   console.log(formState.errors);
 

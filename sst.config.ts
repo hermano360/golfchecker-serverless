@@ -58,13 +58,23 @@ export default {
           "POST /scrape": "packages/functions/src/queue.requester",
           "POST /match": "packages/functions/src/matches.main",
           "GET /alerts/{userId}": "packages/functions/src/alerts.fetchAlerts",
+          "GET /alerts/{userId}/{alertId}":
+            "packages/functions/src/alerts.fetchAlertById",
+          "DELETE /alerts/{userId}/{alertId}":
+            "packages/functions/src/alerts.deleteAlertById",
           "POST /alerts": "packages/functions/src/alerts.setAlerts",
+          "GET /users": "packages/functions/src/users.fetchUsers",
+          "GET /users/{userId}/register":
+            "packages/functions/src/users.registerUser",
         },
       });
 
-      const site = new NextjsSite(stack, "site", { bind: [api] });
-
-      api.bind([site]);
+      const site = new NextjsSite(stack, "site", {
+        bind: [api],
+        environment: {
+          NEXT_PUBLIC_API_URL: api.url,
+        },
+      });
 
       stack.addOutputs({
         ApiUrl: api.url,

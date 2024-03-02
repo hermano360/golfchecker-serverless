@@ -1,11 +1,102 @@
 import { ApiHandler } from "sst/node/api";
+import AWS from "aws-sdk";
+import { Table } from "sst/node/table";
+import { randomUUID } from "crypto";
+
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export const fetchAlerts = ApiHandler(async (evt) => {
+  const userId = evt.pathParameters?.userId;
+
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
+
+  const params = {
+    TableName: Table.GolfChecker.tableName,
+    KeyConditionExpression: `PK = :PK`,
+    ExpressionAttributeValues: {
+      ":PK": `alert#userId#${userId}`,
+    },
+    Select: "SPECIFIC_ATTRIBUTES",
+    ProjectionExpression:
+      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
+  };
+
+  const results = await dynamoDb.query(params).promise();
+
+  const { Items = [] } = results;
+
   return {
     statusCode: 200,
-    body: JSON.stringify({
-      message: "Fetching Alerts",
-    }),
+    body: JSON.stringify(Items),
+  };
+});
+
+export const deleteAlertById = ApiHandler(async (evt) => {
+  const userId = evt.pathParameters?.userId;
+  const alertId = evt.pathParameters?.alertId;
+
+  if (!userId || !alertId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
+
+  const params = {
+    TableName: Table.GolfChecker.tableName,
+    Key: {
+      PK: `alert#userId#${userId}`,
+      SK: `alertId#${alertId}`,
+    },
+  };
+  try {
+    await dynamoDb.delete(params).promise();
+
+    return {
+      statusCode: 200,
+      body: `Successfully deleted alertId ${alertId}`,
+    };
+  } catch (err) {
+    return {
+      statusCode: 500,
+      body: `There was an error deleting alertId ${alertId}`,
+    };
+  }
+});
+
+export const fetchAlertById = ApiHandler(async (evt) => {
+  const userId = evt.pathParameters?.userId;
+  const alertId = evt.pathParameters?.alertId;
+
+  if (!userId || !alertId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
+
+  const params = {
+    TableName: Table.GolfChecker.tableName,
+    Key: {
+      PK: `alert#userId#${userId}`,
+      SK: `alertId#${alertId}`,
+    },
+    Select: "SPECIFIC_ATTRIBUTES",
+    ProjectionExpression:
+      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
+  };
+
+  const result = await dynamoDb.get(params).promise();
+  const { Item = {} } = result;
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(Item),
   };
 });
 
@@ -26,7 +117,19 @@ export const setAlerts = ApiHandler(async (evt) => {
     };
   }
 
-  const { userId } = body;
+  const alertId = randomUUID();
+
+  const params = {
+    TableName: Table.GolfChecker.tableName,
+    Item: {
+      PK: `alert#userId#${body.userId}`,
+      SK: `alertId#${alertId}`,
+      ...body,
+      id: alertId,
+    },
+  };
+
+  await dynamoDb.put(params).promise();
 
   return {
     statusCode: 200,

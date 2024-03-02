@@ -33,5 +33,3 @@ export const {
     },
   },
 });
-
-export const FLOWERS = 3;
