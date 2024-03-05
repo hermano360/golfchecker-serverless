@@ -131,7 +131,7 @@ export async function createAlert(
     };
   }
 
-  let alert: Alert;
+  let alert;
   const createAlertData = {
     courseId: data.courseId,
     startTime: parseTime(data.startTime),
@@ -143,13 +143,11 @@ export async function createAlert(
   };
 
   try {
-    const result = await submitCreateAlert({
+    alert = await submitCreateAlert({
       ...createAlertData,
       startTime: formatTimeToCardinality(data.startTime),
       endTime: formatTimeToCardinality(data.endTime),
     });
-
-    console.log(result);
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {

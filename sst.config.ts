@@ -37,26 +37,39 @@ export default {
         },
       });
 
+      const matchingQueue = new Queue(stack, "MatchingQueue", {
+        consumer: {
+          function: "packages/functions/src/queue.match",
+        },
+      });
+
       fetchingQueue.bind([table]);
+      matchingQueue.bind([table]);
 
       queue.bind([table, fetchingQueue]);
 
       const api = new Api(stack, "api", {
         defaults: {
           function: {
-            bind: [table, queue],
+            bind: [table, queue, matchingQueue],
           },
         },
         routes: {
           "GET /": "packages/functions/src/time.handler",
           "GET /updatedAt": "packages/functions/src/updatedAt.getLatest",
           "POST /updatedAt": "packages/functions/src/updatedAt.setLatest",
+          "GET /matchedAt/{userId}":
+            "packages/functions/src/matchedAt.getLatestMatchedAt",
+          "POST /matchedAt/{userId}":
+            "packages/functions/src/matchedAt.setLatestMatchedAt",
           "GET /courses": "packages/functions/src/courses.fetchCourses",
           "POST /entities": "packages/functions/src/entities.fetchEntities",
           "POST /entities/set": "packages/functions/src/entities.setEntities",
           "POST /scraping": "packages/functions/src/scraping.initializeScrape",
           "POST /scrape": "packages/functions/src/queue.requester",
-          "POST /match": "packages/functions/src/matches.main",
+          "GET /matches": "packages/functions/src/matches.main",
+          "GET /matches/{userId}":
+            "packages/functions/src/matches.fetchMatchesByUser",
           "GET /alerts/{userId}": "packages/functions/src/alerts.fetchAlerts",
           "GET /alerts/{userId}/{alertId}":
             "packages/functions/src/alerts.fetchAlertById",

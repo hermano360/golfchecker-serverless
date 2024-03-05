@@ -83,7 +83,7 @@ export const fetchScraping = (date: string, players = 4): Promise<string> => {
       .get("https://app.scrapingbee.com/api/v1/", {
         params: {
           api_key:
-            "RGF7SW8WTWMVP7QGXTD24SXYMMNDQA52N2NL66UTQDYISMLW6W8PWEFPZAE0I4XAJU9JWBYZ0C2JVG2Z",
+            "GZHVA58CGR3EAMBP7VH8FPFA91YJZF1O1C710CNECR6T1PCM85CHU7955STYXYKXLXHP1JI7T4L270Q3",
           url: "https://cityofla.ezlinksgolf.com",
           wait: "5000",
           block_resources: "false",

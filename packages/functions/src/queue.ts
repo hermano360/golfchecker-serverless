@@ -4,6 +4,12 @@ import { getLatestUpdatedAt, setLatestUpdatedAt } from "../../utils/updatedAt";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import duration from "dayjs/plugin/duration";
+import { fetchAlertsByUser } from "../../utils/alerts";
+import { fetchEntitiesUtil, setEntryItemUtil } from "../../utils/entities";
+import { getRangeListOfDates, parseTimeDashes } from "../../utils/data/time";
+import { fetchScraping, processScraping } from "../../utils/scraping";
+import { setMatchItemUtil } from "../../utils/matches";
+import { setLatestMatchedAtUtil } from "../../utils/matchedAt";
 
 dayjs.extend(duration);
 dayjs.extend(utc);
@@ -24,12 +30,12 @@ export async function scrape(event) {
 
   console.log({ date, updatedAt });
 
-  //   const result = await fetchScraping(date);
-  //   console.log("FETCHING SCRAPING", date);
-  //   const { entries } = await processScraping(result);
-  //   console.log("submitting entries", { entries: entries.length, updatedAt });
-  //   await setEntryItemUtil(updatedAt, entries);
-  //   console.log("submitted entries");
+  const result = await fetchScraping(date);
+  console.log("FETCHING SCRAPING", date);
+  const { entries } = await processScraping(result);
+  console.log("submitting entries", { entries: entries.length, updatedAt });
+  await setEntryItemUtil(updatedAt, entries);
+  console.log("submitted entries");
 
   return {};
 }
@@ -102,4 +108,41 @@ export async function requester() {
     statusCode: 200,
     body: JSON.stringify({ status: "Successfully received request" }),
   };
+}
+
+export async function match(event) {
+  const userId = JSON.parse(event.Records[0].body).userId;
+
+  const alerts = await fetchAlertsByUser(userId);
+  const { updatedAt } = await getLatestUpdatedAt();
+
+  const alertQueries = alerts.reduce((acc, alert) => {
+    const dateList = getRangeListOfDates(alert.startDate, alert.endDate);
+    const { courseId, startTime, endTime } = alert;
+
+    const values = dateList.map((date) => ({
+      updatedAt,
+      courseId,
+      startsAt: parseTimeDashes(date, startTime),
+      endsAt: parseTimeDashes(date, endTime),
+    }));
+
+    return [...acc, ...values];
+  }, []);
+
+  const matchQueries = await Promise.all(alertQueries.map(fetchEntitiesUtil));
+
+  const matches = matchQueries.reduce((finalMatches, query) => {
+    return [...finalMatches, ...query];
+  }, []);
+
+  const { matchedAt } = await setLatestMatchedAtUtil(userId);
+
+  if (matches.length === 0) {
+    return {};
+  }
+
+  await setMatchItemUtil({ matchedAt, userId, matches });
+
+  return {};
 }

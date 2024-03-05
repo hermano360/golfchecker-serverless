@@ -1,68 +1,76 @@
 import { Table } from "sst/node/table";
 import AWS from "aws-sdk";
 import { splitWriteItems } from "./data/dynamoUtils";
+import { randomUUID } from "crypto";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-export const getEntryItem = ({ updatedAt, courseId, teeTime, ...rest }) => {
+export const getMatchItem = ({
+  userId,
+  matchedAt,
+  courseId,
+  teeTime,
+  updatedAt,
+  id,
+}) => {
   return {
-    PK: `entry#updatedAt#${updatedAt}`,
+    PK: `match#userId#${userId}#matchedAt#${matchedAt}`,
     SK: `courseId#${courseId}#teeTime#${teeTime}`,
     updatedAt,
+    userId,
+    matchedAt,
     courseId,
     teeTime,
-    ...rest,
+    id,
   };
 };
 
-export const writeEntryItems = async (params) => {
+export const writeMatchItems = async (params) => {
   return new Promise((resolve, reject) => {
     dynamoDb.batchWrite(params, (err, data) => {
       if (err) {
         const message = err instanceof Error ? err.message : String(err);
         return reject(err);
       }
+
       resolve(data);
     });
   });
 };
 
-export const setEntryItemUtil = async (updatedAt, entries = []) => {
-  const formattedEntries = entries.map((entry) => ({
+export const setMatchItemUtil = async ({ matchedAt, userId, matches = [] }) => {
+  const formattedEntries = matches.map((match) => ({
     PutRequest: {
-      Item: getEntryItem({ updatedAt, ...entry }),
+      Item: getMatchItem({ ...match, matchedAt, userId, id: randomUUID() }),
     },
   }));
 
   const sectionedItems = splitWriteItems(formattedEntries);
 
   sectionedItems.forEach(async (items, i) => {
+    if (items.length === 0) {
+      return;
+    }
+
+    console.log(JSON.stringify(items));
     const params = {
       RequestItems: {
         [Table.GolfChecker.tableName]: items,
       },
     };
 
-    await writeEntryItems(params);
+    await writeMatchItems(params);
   });
 
   return { success: true };
 };
 
-export const fetchEntitiesUtil = async ({
-  updatedAt,
-  courseId,
-  startsAt,
-  endsAt,
-}) => {
+export const fetchMatchesUtil = async ({ userId, matchedAt }) => {
   const params = {
     TableName: Table.GolfChecker.tableName,
-
-    KeyConditionExpression: `PK = :PK AND SK BETWEEN :startsAt AND :endsAt`,
+    KeyConditionExpression: `PK = :PK`,
     ExpressionAttributeValues: {
-      ":PK": `entry#updatedAt#${updatedAt}`,
-      ":startsAt": `courseId#${courseId}#teeTime#${startsAt}`,
-      ":endsAt": `courseId#${courseId}#teeTime#${endsAt}`,
+      ":PK": `match#userId#${userId}#matchedAt#${matchedAt}`,
     },
     Select: "ALL_ATTRIBUTES",
   };
@@ -70,6 +78,8 @@ export const fetchEntitiesUtil = async ({
   const results = await dynamoDb.query(params).promise();
 
   const { Items = [] } = results;
+
+  console.log(Items.length);
 
   return Items;
 };

@@ -1,11 +1,6 @@
 import { ApiHandler } from "sst/node/api";
 import AWS from "aws-sdk";
-import { Table } from "sst/node/table";
-import {
-  getEntryItem,
-  setEntryItemUtil,
-  splitWriteItems,
-} from "../../utils/entities";
+import { fetchEntitiesUtil, setEntryItemUtil } from "../../utils/entities";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -31,27 +26,17 @@ export const fetchEntities = ApiHandler(async (evt) => {
     };
   }
 
-  const params = {
-    // Get the table name from the environment variable
-    TableName: Table.GolfChecker.tableName,
-    // Get all the rows where the userId is our hardcoded user id
-    KeyConditionExpression: `PK = :PK AND SK BETWEEN :startsAt AND :endsAt`,
-    ExpressionAttributeValues: {
-      ":PK": `entry#updatedAt#${updatedAt}`,
-      ":startsAt": `courseId#${courseId}#teeTime#${startsAt}`,
-      ":endsAt": `courseId#${courseId}#teeTime#${endsAt}`,
-    },
-    Select: "ALL_ATTRIBUTES",
-  };
-
   try {
-    const results = await dynamoDb.query(params).promise();
-
-    const { Items = [] } = results;
+    const entities = await fetchEntitiesUtil({
+      startsAt,
+      endsAt,
+      courseId,
+      updatedAt,
+    });
 
     return {
       statusCode: 200,
-      body: JSON.stringify(Items),
+      body: JSON.stringify(entities),
     };
   } catch (error) {
     let message;

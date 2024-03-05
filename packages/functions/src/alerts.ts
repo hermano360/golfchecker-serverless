@@ -119,13 +119,17 @@ export const setAlerts = ApiHandler(async (evt) => {
 
   const alertId = randomUUID();
 
+  const data = {
+    ...body,
+    id: alertId,
+  };
+
   const params = {
     TableName: Table.GolfChecker.tableName,
     Item: {
       PK: `alert#userId#${body.userId}`,
       SK: `alertId#${alertId}`,
-      ...body,
-      id: alertId,
+      ...data,
     },
   };
 
@@ -133,6 +137,6 @@ export const setAlerts = ApiHandler(async (evt) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify(body),
+    body: JSON.stringify(data),
   };
 });

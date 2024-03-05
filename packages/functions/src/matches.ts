@@ -1,17 +1,67 @@
-import { NextjsSite } from "sst/node/site";
-// import dayjs from "dayjs";
-// import utc from "dayjs/plugin/utc";
-// import duration from "dayjs/plugin/duration";
+import { fetchAllUsers } from "../../utils/users";
+import AWS from "aws-sdk";
+import { ApiHandler } from "sst/node/api";
+import { Queue } from "sst/node/queue";
+import { fetchMatchesUtil } from "../../utils/matches";
+import {
+  getLatestMatchedAtUtil,
+  setLatestMatchedAtUtil,
+} from "../../utils/matchedAt";
 
-// dayjs.extend(duration);
-// dayjs.extend(utc);
+const sqs = new AWS.SQS();
 
 export async function main() {
-  const site = NextjsSite.site.url;
+  const users = await fetchAllUsers();
 
-  console.log(site);
+  users.forEach(async (userId) => {
+    await sqs
+      .sendMessage({
+        QueueUrl: Queue.MatchingQueue.queueUrl,
+        MessageBody: JSON.stringify({
+          userId,
+        }),
+      })
+      .promise();
+  });
+
   return {
     statusCode: 200,
-    body: JSON.stringify({ status: "Checking out user info", site }),
+    body: JSON.stringify({ status: "Matching Sequence Initialized" }),
   };
 }
+
+export const fetchMatchesByUser = ApiHandler(async (evt) => {
+  const userId = evt.pathParameters?.userId;
+
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
+
+  const { matchedAt } = await getLatestMatchedAtUtil(userId);
+
+  try {
+    const matches = await fetchMatchesUtil({
+      userId,
+      matchedAt,
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(matches),
+    };
+  } catch (error) {
+    let message;
+    if (error instanceof Error) {
+      message = error.message;
+    } else {
+      message = String(error);
+    }
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: message }),
+    };
+  }
+});
