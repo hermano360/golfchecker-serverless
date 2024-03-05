@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+import dayjs from "dayjs";
 import { Table } from "sst/node/table";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
@@ -22,7 +23,7 @@ export const getLatestUpdatedAt = async () => {
 };
 
 export const setLatestUpdatedAt = async () => {
-  const currentTimeStamp = new Date().toISOString();
+  const currentTimeStamp = dayjs().toISOString();
 
   const params = {
     TableName: Table.GolfChecker.tableName,

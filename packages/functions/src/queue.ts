@@ -16,32 +16,86 @@ dayjs.extend(utc);
 
 const sqs = new AWS.SQS();
 
-export async function scrape(event) {
-  const day = dayjs.utc().utcOffset(-8);
-
-  const offset = JSON.parse(event.Records[0].body).dateOffset;
-
-  if (offset < 0) {
-    return;
-  }
-
-  const date = day.add(offset, "day").format("MM/DD/YYYY");
-  const { updatedAt } = await getLatestUpdatedAt();
-
-  console.log({ date, updatedAt });
-
+const scrapingUtility = async (date, updatedAt) => {
   const result = await fetchScraping(date);
   console.log("FETCHING SCRAPING", date);
   const { entries } = await processScraping(result);
   console.log("submitting entries", { entries: entries.length, updatedAt });
   await setEntryItemUtil(updatedAt, entries);
-  console.log("submitted entries");
+  console.log("entries completed", { entries: entries.length, updatedAt });
+};
 
-  return {};
+export async function scrape(event) {
+  const records = event.Records;
+  for (const record of records) {
+    try {
+      await sqs
+        .changeMessageVisibility({
+          QueueUrl: Queue.FetchingQueue.queueUrl,
+          ReceiptHandle: record.receiptHandle,
+          VisibilityTimeout: 300,
+        })
+        .promise();
+
+      console.log("Changed visiblity", record.receiptHandle);
+
+      const { date, updatedAt } = JSON.parse(record.body);
+
+      await scrapingUtility(date, updatedAt);
+
+      console.log("submitted entries, deleting message");
+
+      await sqs
+        .deleteMessage({
+          QueueUrl: Queue.FetchingQueue.queueUrl,
+          ReceiptHandle: record.receiptHandle,
+        })
+        .promise();
+    } catch (err) {
+      console.log(err);
+      await sqs
+        .changeMessageVisibility({
+          QueueUrl: Queue.FetchingQueue.queueUrl,
+          ReceiptHandle: record.receiptHandle,
+          VisibilityTimeout: 0,
+        })
+        .promise();
+    }
+  }
+
+  return { success: true };
 }
 
 export async function consumer(event) {
-  const day = dayjs.utc().utcOffset(-8);
+  const firstRecord = event.Records[0];
+  const receiptHandle = firstRecord.receiptHandle;
+
+  if (!firstRecord.body) {
+    return await sqs
+      .deleteMessage({
+        QueueUrl: Queue.Queue.queueUrl,
+        ReceiptHandle: receiptHandle,
+      })
+      .promise();
+  }
+
+  const { date, days } = JSON.parse(event.Records[0].body);
+  if (!date || typeof days === "undefined") {
+    return await sqs
+      .deleteMessage({
+        QueueUrl: Queue.Queue.queueUrl,
+        ReceiptHandle: receiptHandle,
+      })
+      .promise();
+  }
+
+  await sqs
+    .changeMessageVisibility({
+      QueueUrl: Queue.Queue.queueUrl,
+      ReceiptHandle: receiptHandle,
+      VisibilityTimeout: 300,
+    })
+    .promise();
 
   const { updatedAt } = await getLatestUpdatedAt();
 
@@ -49,65 +103,45 @@ export async function consumer(event) {
     .duration(dayjs().diff(dayjs(updatedAt)))
     .asSeconds();
 
-  if (secondsSinceLastUpdated < 300) {
-    console.log("Not enough time since last updated");
-    return {};
-  }
+  console.log({ secondsSinceLastUpdated });
 
-  const newUpdatedAt = await setLatestUpdatedAt();
+  // if (secondsSinceLastUpdated < 300) {
+  //   console.log("Not enough time since last updated");
+  //   return {};
+  // }
 
-  console.log({ newUpdatedAt });
+  const lastUpdatedAt = await setLatestUpdatedAt();
 
-  //   await sqs
-  //     .sendMessage({
-  //       QueueUrl: Queue.FetchingQueue.queueUrl,
-  //       MessageBody: JSON.stringify({
-  //         dateOffset: 0,
-  //       }),
-  //     })
-  //     .promise();
-  //   await sqs
-  //     .sendMessage({
-  //       QueueUrl: Queue.FetchingQueue.queueUrl,
-  //       MessageBody: JSON.stringify({
-  //         dateOffset: 1,
-  //       }),
-  //     })
-  //     .promise();
-  //   await sqs
-  //     .sendMessage({
-  //       QueueUrl: Queue.FetchingQueue.queueUrl,
-  //       MessageBody: JSON.stringify({
-  //         dateOffset: 2,
-  //       }),
-  //     })
-  //     .promise();
+  const queueQueries = Array(days + 1)
+    .fill(0)
+    .map((_, i) =>
+      sqs
+        .sendMessage({
+          QueueUrl: Queue.FetchingQueue.queueUrl,
+          MessageBody: JSON.stringify({
+            date: dayjs
+              .utc(date)
+              .subtract(8, "hours")
+              .add(i, "days")
+              .format("MM/DD/YYYY"),
+            updatedAt: lastUpdatedAt.updatedAt,
+          }),
+        })
+        .promise()
+    );
+
+  await Promise.all(queueQueries);
+
   await sqs
-    .sendMessage({
-      QueueUrl: Queue.FetchingQueue.queueUrl,
-      MessageBody: JSON.stringify({
-        dateOffset: 3,
-      }),
+    .deleteMessage({
+      QueueUrl: Queue.Queue.queueUrl,
+      ReceiptHandle: receiptHandle,
     })
     .promise();
 
   console.log("Messages queued!");
 
   return {};
-}
-
-export async function requester() {
-  await sqs
-    .sendMessage({
-      QueueUrl: Queue.Queue.queueUrl,
-      MessageBody: JSON.stringify({ ordered: new Date().toISOString() }),
-    })
-    .promise();
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ status: "Successfully received request" }),
-  };
 }
 
 export async function match(event) {

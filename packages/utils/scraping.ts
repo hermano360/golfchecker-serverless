@@ -5,6 +5,12 @@ import { coursesWithId } from "../functions/src/courses";
 import { parseTime } from "./data/time";
 
 export const fetchScraping = (date: string, players = 4): Promise<string> => {
+  const inputClicks = `const values=document.querySelectorAll('input[title="Select a course"]');${[
+    0, 1, 2, 4, 6, 7, 10, 11, 13, 15,
+  ]
+    .map((i) => `values[${i}].click()`)
+    .join(";")}`;
+
   const instructions = [
     { wait_for: ".preSearch-calendar-input" },
     {
@@ -14,6 +20,9 @@ export const fetchScraping = (date: string, players = 4): Promise<string> => {
       evaluate: `document.querySelector('.preSearch-select-player').value = 'string:${players}'`,
     },
     { fill: [".preSearch-calendar-input", date] },
+    {
+      evaluate: inputClicks,
+    },
     { wait: 1500 },
     { click: ".btn-default" },
     { wait_for: ".X2CourseName" },
@@ -76,6 +85,50 @@ export const fetchScraping = (date: string, players = 4): Promise<string> => {
     { wait: 500 },
     { scroll_y: 8000 },
     { wait: 500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
+    {
+      evaluate: "window.scrollBy(0,400)",
+    },
+    { wait: 1500 },
   ];
 
   return new Promise((resolve, reject) => {
@@ -83,7 +136,7 @@ export const fetchScraping = (date: string, players = 4): Promise<string> => {
       .get("https://app.scrapingbee.com/api/v1/", {
         params: {
           api_key:
-            "GZHVA58CGR3EAMBP7VH8FPFA91YJZF1O1C710CNECR6T1PCM85CHU7955STYXYKXLXHP1JI7T4L270Q3",
+            "TV3FVBYHGSKOTC3YFJTG13WS3QSTUOQGL1LY7SGDNCK8IVBV8JU5TTUWC24VUBY4018QLWLOUCWDAJM1",
           url: "https://cityofla.ezlinksgolf.com",
           wait: "5000",
           block_resources: "false",
@@ -159,7 +212,6 @@ export const processScraping = (scrapingText: string) => {
 
 export const submitEntries = (updatedAt, entries) => {
   return new Promise((resolve, reject) => {
-    console.log(`${Api.api.url}/entities/set`);
     axios
       .post(`${Api.api.url}/entities/set`, {
         updatedAt,

@@ -34,6 +34,9 @@ export const setEntryItemUtil = async (updatedAt, entries = []) => {
     },
   }));
 
+  if (formattedEntries.length === 0) {
+    return { success: true };
+  }
   const sectionedItems = splitWriteItems(formattedEntries);
 
   sectionedItems.forEach(async (items, i) => {

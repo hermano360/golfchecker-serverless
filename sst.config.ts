@@ -34,6 +34,11 @@ export default {
       const fetchingQueue = new Queue(stack, "FetchingQueue", {
         consumer: {
           function: "packages/functions/src/queue.scrape",
+          cdk: {
+            eventSource: {
+              maxConcurrency: 3,
+            },
+          },
         },
       });
 
@@ -43,15 +48,15 @@ export default {
         },
       });
 
-      fetchingQueue.bind([table]);
+      fetchingQueue.bind([table, fetchingQueue]);
       matchingQueue.bind([table]);
 
-      queue.bind([table, fetchingQueue]);
+      queue.bind([table, fetchingQueue, queue]);
 
       const api = new Api(stack, "api", {
         defaults: {
           function: {
-            bind: [table, queue, matchingQueue],
+            bind: [table, queue, matchingQueue, fetchingQueue],
           },
         },
         routes: {
@@ -65,8 +70,7 @@ export default {
           "GET /courses": "packages/functions/src/courses.fetchCourses",
           "POST /entities": "packages/functions/src/entities.fetchEntities",
           "POST /entities/set": "packages/functions/src/entities.setEntities",
-          "POST /scraping": "packages/functions/src/scraping.initializeScrape",
-          "POST /scrape": "packages/functions/src/queue.requester",
+          "POST /scrape": "packages/functions/src/scraping.startScrape",
           "GET /matches": "packages/functions/src/matches.main",
           "GET /matches/{userId}":
             "packages/functions/src/matches.fetchMatchesByUser",
