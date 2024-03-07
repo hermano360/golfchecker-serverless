@@ -71,7 +71,7 @@ export const extractNumPlayers = (
     return;
   }
 
-  const numPlayersRegex = /(?:\d\-)?(\d)\sPlayer[s]?/gi;
+  const numPlayersRegex = /(?:\d\–)?(\d)\sPlayer[s]?/gi;
 
   const maxNumberOfPlayers = parseInt(
     numPlayersText.replace(numPlayersRegex, "$1")
@@ -80,7 +80,6 @@ export const extractNumPlayers = (
   if (isNaN(maxNumberOfPlayers)) {
     return;
   }
-  console.log(numPlayersText, maxNumberOfPlayers);
 
   return maxNumberOfPlayers;
 };
