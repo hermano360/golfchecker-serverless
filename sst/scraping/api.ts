@@ -12,7 +12,7 @@ const sqs = new AWS.SQS();
 dayjs.extend(utc);
 dayjs.extend(duration);
 
-export const initiateEntryScrape = ApiHandler(async (evt) => {
+export const initiateEntryFetching = ApiHandler(async (evt) => {
   if (!evt.body) {
     return {
       statusCode: 400,
