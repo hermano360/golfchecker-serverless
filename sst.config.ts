@@ -22,12 +22,12 @@ export default {
       const queue = new Queue(stack, "ScrapeRequestQueue", {
         consumer: {
           function: "sst/scraping/queue.scrapeRequest",
-          // cdk: {
-          //   eventSource: {
-          //     batchSize: 50,
-          //     maxBatchingWindow: Duration.seconds(60),
-          //   },
-          // },
+          cdk: {
+            eventSource: {
+              batchSize: 50,
+              maxBatchingWindow: Duration.seconds(60),
+            },
+          },
         },
       });
 
