@@ -15,24 +15,24 @@ const monthMap = {
   "12": "December",
 };
 
-export const parseTime = (
-  date = "",
-  teeHourTime = "",
-  gmtOffset = "GMT-08:00"
-) => {
-  const [month, day, year] = date.split("/");
+// export const parseTime = (
+//   date = "",
+//   teeHourTime = "",
+//   gmtOffset = "GMT-08:00"
+// ) => {
+//   const [month, day, year] = date.split("/");
 
-  const [hourMin, dayPeriod] = teeHourTime.split(" ");
-  const isAfternoon = dayPeriod === "PM";
+//   const [hourMin, dayPeriod] = teeHourTime.split(" ");
+//   const isAfternoon = dayPeriod === "PM";
 
-  const [hour, min] = hourMin.split(":");
+//   const [hour, min] = hourMin.split(":");
 
-  const teeTimeDate = `${monthMap[month]} ${day}, ${year} ${
-    isAfternoon ? (parseInt(hour) % 12) + 12 : hour
-  }:${min}:00 ${gmtOffset}`;
+//   const teeTimeDate = `${monthMap[month]} ${day}, ${year} ${
+//     isAfternoon ? (parseInt(hour) % 12) + 12 : hour
+//   }:${min}:00 ${gmtOffset}`;
 
-  return new Date(teeTimeDate).toISOString();
-};
+//   return new Date(teeTimeDate).toISOString();
+// };
 
 export const parseTimeDashes = (
   date = "",

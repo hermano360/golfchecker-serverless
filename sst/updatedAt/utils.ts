@@ -1,10 +1,16 @@
 import AWS from "aws-sdk";
 import dayjs from "dayjs";
 import { Table } from "sst/node/table";
+import utc from "dayjs/plugin/utc";
+import { IsoTimeStamp } from "../time/utils";
+
+dayjs.extend(utc);
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-export const getLatestUpdatedAt = async () => {
+export const getLatestUpdatedAt = async (): Promise<
+  IsoTimeStamp | undefined
+> => {
   const params = {
     TableName: Table.GolfChecker.tableName,
     KeyConditionExpression: "PK = :updatedAt",
@@ -19,11 +25,15 @@ export const getLatestUpdatedAt = async () => {
   const results = await dynamoDb.query(params).promise();
 
   const item = results.Items ? results.Items[0] : {};
-  return item;
+
+  const updatedAt = item.updatedAt;
+  return updatedAt;
 };
 
-export const setLatestUpdatedAt = async () => {
-  const currentTimeStamp = dayjs().toISOString();
+export const setLatestUpdatedAt = async (): Promise<
+  IsoTimeStamp | undefined
+> => {
+  const currentTimeStamp = dayjs.utc().toISOString() as IsoTimeStamp;
 
   const params = {
     TableName: Table.GolfChecker.tableName,
@@ -36,5 +46,5 @@ export const setLatestUpdatedAt = async () => {
 
   await dynamoDb.put(params).promise();
 
-  return { updatedAt: currentTimeStamp };
+  return currentTimeStamp;
 };

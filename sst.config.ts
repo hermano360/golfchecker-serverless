@@ -19,21 +19,21 @@ export default {
         },
       });
 
-      const queue = new Queue(stack, "Queue", {
+      const queue = new Queue(stack, "ScrapeRequestQueue", {
         consumer: {
-          function: "packages/functions/src/queue.consumer",
-          cdk: {
-            eventSource: {
-              batchSize: 50,
-              maxBatchingWindow: Duration.seconds(60),
-            },
-          },
+          function: "sst/scraping/queue.scrapeRequest",
+          // cdk: {
+          //   eventSource: {
+          //     batchSize: 50,
+          //     maxBatchingWindow: Duration.seconds(60),
+          //   },
+          // },
         },
       });
 
       const fetchingQueue = new Queue(stack, "FetchingQueue", {
         consumer: {
-          function: "packages/functions/src/queue.scrape",
+          function: "sst/scraping/queue.scrapeFetch",
           cdk: {
             eventSource: {
               maxConcurrency: 3,
@@ -70,7 +70,7 @@ export default {
           "GET /courses": "packages/functions/src/courses.fetchCourses",
           "POST /entities": "packages/functions/src/entities.fetchEntities",
           "POST /entities/set": "packages/functions/src/entities.setEntities",
-          "POST /scrape": "packages/functions/src/scraping.startScrape",
+          "POST /scrape": "sst/scraping/api.initiateEntryScrape",
           "GET /matches": "packages/functions/src/matches.main",
           "GET /matches/{userId}":
             "packages/functions/src/matches.fetchMatchesByUser",

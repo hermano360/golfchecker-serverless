@@ -5,13 +5,14 @@ import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
 
 import duration from "dayjs/plugin/duration";
+import { getPstDayToday } from "../time/utils";
 
 const sqs = new AWS.SQS();
 
 dayjs.extend(utc);
 dayjs.extend(duration);
 
-export const startScrape = ApiHandler(async (evt) => {
+export const initiateEntryScrape = ApiHandler(async (evt) => {
   if (!evt.body) {
     return {
       statusCode: 400,
@@ -19,13 +20,16 @@ export const startScrape = ApiHandler(async (evt) => {
     };
   }
 
-  const today = dayjs.utc().subtract(8, "hours").format("MM/DD/YYYY");
-  const { date = today, days = 0 } = JSON.parse(evt.body);
+  const body = JSON.parse(evt.body);
 
-  console.log(`Original date ${date} and days ${days}`);
+  const pstToday = getPstDayToday();
+
+  // Getting the default date to be searched (in PST) and subsequent days afterwards
+  const { date = pstToday, days = 0 } = body;
+
   await sqs
     .sendMessage({
-      QueueUrl: Queue.Queue.queueUrl,
+      QueueUrl: Queue.ScrapeRequestQueue.queueUrl,
       MessageBody: JSON.stringify({
         date,
         days,

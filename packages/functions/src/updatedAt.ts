@@ -3,17 +3,20 @@ import AWS from "aws-sdk";
 // import * as uuid from "uuid";
 // import { ApiGatewayProxyEventV2 } from "aws-lambda";
 import { Table } from "sst/node/table";
-import { getLatestUpdatedAt, setLatestUpdatedAt } from "../../utils/updatedAt";
+import {
+  getLatestUpdatedAt,
+  setLatestUpdatedAt,
+} from "../../../sst/updatedAt/utils";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export const getLatest = ApiHandler(async () => {
   try {
-    const updatedAtItem = await getLatestUpdatedAt();
+    const updatedAt = await getLatestUpdatedAt();
 
     return {
       statusCode: 200,
-      body: JSON.stringify(updatedAtItem),
+      body: JSON.stringify({ updatedAt }),
     };
   } catch (error) {
     let message;
@@ -35,7 +38,7 @@ export const setLatest = ApiHandler(async (evt) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(updatedAt),
+      body: JSON.stringify({ updatedAt }),
     };
   } catch (error) {
     let message;
