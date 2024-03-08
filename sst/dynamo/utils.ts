@@ -99,3 +99,10 @@ export async function saveSingleItem<Type>(
   await dynamoDb.put(params).promise();
   return;
 }
+
+export async function deleteSingleItem<Type>(
+  params: AWS.DynamoDB.DocumentClient.DeleteItemInput
+): Promise<undefined> {
+  await dynamoDb.delete(params).promise();
+  return;
+}

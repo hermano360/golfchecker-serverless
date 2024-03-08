@@ -1,12 +1,6 @@
-import AWS from "aws-sdk";
 import { Table } from "sst/node/table";
-import { queryPaginationRequests } from "../dynamo/utils";
-import {
-  ClockTime,
-  DateDash,
-  IsoTimeStamp,
-  generateDateTimeRangeList,
-} from "../time/utils";
+import * as utils from "../utils";
+import { ClockTime, DateDash, IsoTimeStamp } from "../time/utils";
 
 export type Alert = {
   startTime: ClockTime;
@@ -37,14 +31,14 @@ export const fetchAlertsByUser = async (userId: string): Promise<Alert[]> => {
       "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
   };
 
-  const alerts = await queryPaginationRequests<Alert>(params);
+  const alerts = await utils.queryPaginationRequests<Alert>(params);
 
   return alerts;
 };
 
 export const generateAlertSlicesFromAlert = (alert: Alert): AlertSlice[] => {
   console.log({ alert });
-  const timeSegments = generateDateTimeRangeList(
+  const timeSegments = utils.generateDateTimeRangeList(
     alert.startTime,
     alert.startDate,
     alert.endTime,

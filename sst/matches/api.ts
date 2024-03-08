@@ -1,14 +1,12 @@
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
-import { fetchAllUsers } from "../users/utils";
 import { ApiHandler } from "sst/node/api";
-import * as matchedAtUtils from "../matchedAt/utils";
-import * as matchesUtils from "./utils";
+import * as utils from "../utils";
 
 const sqs = new AWS.SQS();
 
 export async function initiateMatchesFetching() {
-  const users = await fetchAllUsers();
+  const users = await utils.fetchAllUsers();
 
   const userMatchRequests = users.map((userId) =>
     sqs
@@ -39,7 +37,7 @@ export const fetchMatchesByUser = ApiHandler(async (evt) => {
     };
   }
 
-  const matchedAt = await matchedAtUtils.getLatestMatchedAt(userId);
+  const matchedAt = await utils.getLatestMatchedAt(userId);
 
   if (!matchedAt) {
     return {
@@ -49,7 +47,7 @@ export const fetchMatchesByUser = ApiHandler(async (evt) => {
   }
 
   try {
-    const matches = await matchesUtils.fetchMatchesByUser({
+    const matches = await utils.fetchMatchesByUser({
       userId,
       matchedAt,
     });

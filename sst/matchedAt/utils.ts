@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { IsoTimeStamp } from "../time/utils";
 import { StringConditions } from "aws-cdk-lib/aws-sns";
-import { dynamoDb, saveSingleItem } from "../dynamo/utils";
+import * as utils from "../utils";
 
 dayjs.extend(utc);
 
@@ -22,7 +22,7 @@ export const setLatestMatchedAt = async (
     },
   };
 
-  await saveSingleItem(params);
+  await utils.saveSingleItem(params);
 
   return matchedAt;
 };
@@ -41,9 +41,11 @@ export const getLatestMatchedAt = async (
     ScanIndexForward: false,
   };
 
-  const results = await dynamoDb.query(params).promise();
+  const results = await utils.queryPaginationRequests<{
+    matchedAt: IsoTimeStamp;
+  }>(params);
 
-  const item = results.Items?.[0];
+  const item = results[0];
 
   if (!item || !item.matchedAt) {
     return;

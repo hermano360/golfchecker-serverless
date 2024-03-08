@@ -45,12 +45,12 @@ export default {
       const matchingQueue = new Queue(stack, "MatchingQueue", {
         consumer: {
           function: "sst/matches/queue.match",
-          // cdk: {
-          //   eventSource: {
-          //     batchSize: 50,
-          //     maxBatchingWindow: Duration.seconds(60),
-          //   },
-          // },
+          cdk: {
+            eventSource: {
+              batchSize: 50,
+              maxBatchingWindow: Duration.seconds(60),
+            },
+          },
         },
       });
 

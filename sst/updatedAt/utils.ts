@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { Table } from "sst/node/table";
 import utc from "dayjs/plugin/utc";
 import { IsoTimeStamp } from "../time/utils";
-import { dynamoDb, saveSingleItem } from "../dynamo/utils";
+import * as utils from "../utils";
 
 dayjs.extend(utc);
 
@@ -20,11 +20,16 @@ export const getLatestUpdatedAt = async (): Promise<
     ScanIndexForward: false,
   };
 
-  const results = await dynamoDb.query(params).promise();
+  const results = await utils.queryPaginationRequests<{
+    updatedAt: IsoTimeStamp;
+  }>(params);
 
-  const item = results.Items ? results.Items[0] : {};
+  const { updatedAt } = results[0] || {};
 
-  const updatedAt = item.updatedAt;
+  if (!updatedAt) {
+    return;
+  }
+
   return updatedAt;
 };
 
@@ -42,7 +47,7 @@ export const setLatestUpdatedAt = async (): Promise<
     },
   };
 
-  await saveSingleItem(params);
+  await utils.saveSingleItem(params);
 
   return currentTimeStamp;
 };

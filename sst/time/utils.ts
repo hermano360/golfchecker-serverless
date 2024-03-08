@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import duration from "dayjs/plugin/duration";
-import { getLatestUpdatedAt } from "../updatedAt/utils";
+import * as utils from "../utils";
 
 dayjs.extend(utc);
 dayjs.extend(duration);
@@ -101,7 +101,7 @@ export const parseTime = (
 export const exceedsElapsedUpdatedAt = async (
   expectedSecondsTimeout: number
 ): Promise<boolean> => {
-  const updatedAt = await getLatestUpdatedAt();
+  const updatedAt = await utils.getLatestUpdatedAt();
 
   const secondsSinceLastUpdated = dayjs
     .duration(dayjs.utc().diff(dayjs(updatedAt)))

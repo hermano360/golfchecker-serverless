@@ -1,6 +1,5 @@
 import { ApiHandler } from "sst/node/api";
-
-import * as entryUtils from "./utils";
+import * as utils from "../utils";
 
 export const fetchEntries = ApiHandler(async (evt) => {
   const { body } = evt;
@@ -73,7 +72,7 @@ export const saveEntries = ApiHandler(async (evt) => {
   }
 
   try {
-    await entryUtils.saveEntries(entries, updatedAt);
+    await utils.saveEntries(entries, updatedAt);
 
     return {
       statusCode: 200,

@@ -1,9 +1,9 @@
 import { ApiHandler } from "sst/node/api";
-import * as updatedAtUtils from "./utils";
+import * as utils from "../utils";
 
 export const getLatestUpdatedAt = ApiHandler(async () => {
   try {
-    const updatedAt = await updatedAtUtils.getLatestUpdatedAt();
+    const updatedAt = await utils.getLatestUpdatedAt();
 
     return {
       statusCode: 200,
@@ -25,7 +25,7 @@ export const getLatestUpdatedAt = ApiHandler(async () => {
 
 export const setLatestUpdatedAt = ApiHandler(async (evt) => {
   try {
-    const updatedAt = await updatedAtUtils.setLatestUpdatedAt();
+    const updatedAt = await utils.setLatestUpdatedAt();
 
     return {
       statusCode: 200,
