@@ -1,8 +1,6 @@
 import { HTMLElement } from "node-html-parser";
 import { ClockTime, DateSlash, IsoTimeStamp, parseTime } from "../time/utils";
-import { CourseName } from "../../packages/functions/src/courses";
-
-import { CourseId, convertCourseToId } from "../courses/utils";
+import { CourseId, convertCourseToId, CourseName } from "../courses/utils";
 import { TeeTimeEntry } from "../entries/utils";
 
 export const extractSearchDate = (

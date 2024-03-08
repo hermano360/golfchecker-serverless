@@ -1,9 +1,9 @@
 import { parse } from "node-html-parser";
-import { CourseId } from "../../packages/functions/src/courses";
 import { extractTeeTimeEntries } from "../html/utils";
 import { IsoTimeStamp } from "../time/utils";
 import { DynamoKeys, writePutRequests } from "../dynamo/utils";
 import { Table } from "sst/node/table";
+import { CourseId } from "../courses/utils";
 
 export type Price = `$${number}.${number}`;
 

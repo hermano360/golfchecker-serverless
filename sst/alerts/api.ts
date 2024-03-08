@@ -6,6 +6,7 @@ import {
   fetchSingleItem,
   queryPaginationRequests,
 } from "../dynamo/utils";
+import { Alert } from "./utils";
 
 export const fetchAlerts = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
@@ -91,15 +92,29 @@ export const fetchAlertById = ApiHandler(async (evt) => {
       "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
   };
 
-  const alert = await fetchSingleItem(params);
+  try {
+    const alert = await fetchSingleItem<Alert>(params);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify(alert),
-  };
+    if (!alert) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: "Alert not found" }),
+      };
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(alert),
+    };
+  } catch (err) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error fetching alert" }),
+    };
+  }
 });
 
-export const setAlerts = ApiHandler(async (evt) => {
+export const saveAlerts = ApiHandler(async (evt) => {
   if (!evt.body) {
     return {
       statusCode: 400,

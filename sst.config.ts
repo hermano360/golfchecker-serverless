@@ -78,11 +78,9 @@ export default {
           "GET /matches": "sst/matches/api.initiateMatchesFetching",
           "GET /matches/{userId}": "sst/matches/api.fetchMatchesByUser",
           "GET /alerts/{userId}": "sst/alerts/api.fetchAlerts",
-          "GET /alerts/{userId}/{alertId}":
-            "packages/functions/src/alerts.fetchAlertById",
-          "DELETE /alerts/{userId}/{alertId}":
-            "packages/functions/src/alerts.deleteAlertById",
-          "POST /alerts": "packages/functions/src/alerts.setAlerts",
+          "GET /alerts/{userId}/{alertId}": "sst/alerts/api.fetchAlertById",
+          "DELETE /alerts/{userId}/{alertId}": "sst/alerts/api.deleteAlertById",
+          "POST /alerts": "sst/alerts/api.saveAlerts",
           "GET /users": "packages/functions/src/users.fetchUsers",
           "GET /users/{userId}/register":
             "packages/functions/src/users.registerUser",
