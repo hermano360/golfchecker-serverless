@@ -71,7 +71,7 @@ export default {
           "POST /updatedAt": "packages/functions/src/updatedAt.setLatest",
           "GET /matchedAt/{userId}": "sst/matchedAt/api.getLatestMatchedAt",
           "POST /matchedAt/{userId}": "sst/matchedAt/api.setLatestMatchedAt",
-          "GET /courses": "packages/functions/src/courses.fetchCourses",
+          "GET /courses": "sst/courses/api.fetchCourses",
           "POST /entities": "packages/functions/src/entities.fetchEntities",
           "POST /entities/set": "packages/functions/src/entities.setEntities",
           "POST /scrape": "sst/scraping/api.initiateEntryFetching",
