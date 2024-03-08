@@ -1,10 +1,8 @@
 import { ApiHandler } from "sst/node/api";
-import AWS from "aws-sdk";
-import { fetchEntitiesUtil, setEntryItemUtil } from "../../utils/entities";
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+import * as entryUtils from "./utils";
 
-export const fetchEntities = ApiHandler(async (evt) => {
+export const fetchEntries = ApiHandler(async (evt) => {
   const { body } = evt;
 
   if (!body) {
@@ -16,7 +14,7 @@ export const fetchEntities = ApiHandler(async (evt) => {
 
   if (!startsAt || !endsAt || !courseId || !updatedAt) {
     return {
-      statusCode: 500,
+      statusCode: 400,
       body: `Invalid payload. Missing parameters: ${JSON.stringify({
         startsAt,
         endsAt,
@@ -27,7 +25,7 @@ export const fetchEntities = ApiHandler(async (evt) => {
   }
 
   try {
-    const entities = await fetchEntitiesUtil({
+    const entries = await entryUtils.fetchEntries({
       startsAt,
       endsAt,
       courseId,
@@ -36,7 +34,7 @@ export const fetchEntities = ApiHandler(async (evt) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify(entities),
+      body: JSON.stringify(entries),
     };
   } catch (error) {
     let message;
@@ -52,11 +50,14 @@ export const fetchEntities = ApiHandler(async (evt) => {
   }
 });
 
-export const setEntities = ApiHandler(async (evt) => {
+export const saveEntries = ApiHandler(async (evt) => {
   const { body } = evt;
   if (!body) {
     return {
       statusCode: 400,
+      body: JSON.stringify({
+        message: "There was a problem with your request",
+      }),
     };
   }
 
@@ -64,14 +65,22 @@ export const setEntities = ApiHandler(async (evt) => {
 
   if (!updatedAt || entries.length === 0) {
     return {
-      statusCode: 200,
+      statusCode: 400,
+      body: JSON.stringify({
+        message: "There was a problem with your request",
+      }),
     };
   }
 
   try {
-    await setEntryItemUtil(updatedAt, entries);
+    await entryUtils.saveEntries(entries, updatedAt);
 
-    return { statusCode: 200 };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        message: `Successfully saved ${entries.length} tee time entries`,
+      }),
+    };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return {
