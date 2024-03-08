@@ -1,16 +1,6 @@
 import AWS from "aws-sdk";
 
-const sqs = new AWS.SQS();
-
-export type SQSRecord = {
-  messageId: string;
-  receiptHandle: string;
-  body: string;
-};
-
-export type SQSEvent = {
-  Records: SQSRecord[];
-};
+export const sqs = new AWS.SQS();
 
 export const deleteSQSMessage = async (
   queueUrl: string,

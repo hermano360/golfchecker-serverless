@@ -1,7 +1,7 @@
 import { ApiHandler } from "sst/node/api";
-import * as utils from "../utils";
+import { getLatestMatchedAt, setLatestMatchedAt } from "./utils";
 
-export const getLatestMatchedAt = ApiHandler(async (evt) => {
+export const getLatestMatchedAtHandler = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
 
   if (!userId) {
@@ -12,7 +12,7 @@ export const getLatestMatchedAt = ApiHandler(async (evt) => {
   }
 
   try {
-    const matchedAt = await utils.getLatestMatchedAt(userId);
+    const matchedAt = await getLatestMatchedAt(userId);
 
     return {
       statusCode: 200,
@@ -32,7 +32,7 @@ export const getLatestMatchedAt = ApiHandler(async (evt) => {
   }
 });
 
-export const setLatestMatchedAt = ApiHandler(async (evt) => {
+export const setLatestMatchedAtHandler = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
 
   if (!userId) {
@@ -42,7 +42,7 @@ export const setLatestMatchedAt = ApiHandler(async (evt) => {
     };
   }
   try {
-    const matchedAt = await utils.setLatestMatchedAt(userId);
+    const matchedAt = await setLatestMatchedAt(userId);
 
     return {
       statusCode: 200,

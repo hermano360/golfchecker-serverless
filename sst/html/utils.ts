@@ -1,8 +1,9 @@
 import { HTMLElement } from "node-html-parser";
-import { ClockTime, DateSlash, IsoTimeStamp } from "../time/utils";
-import { CourseId, CourseName } from "../courses/utils";
-import { TeeTimeEntry } from "../entries/utils";
-import * as utils from "../utils";
+import { ClockTime, DateSlash, IsoTimeStamp } from "../time/types";
+import { CourseId, CourseName } from "../courses/types";
+import { convertCourseToId } from "../courses/utils";
+import { parseTime } from "../time/utils";
+import { TeeTimeEntry } from "../entries/types";
 
 export const extractSearchDate = (
   parsedHtml: HTMLElement
@@ -22,7 +23,7 @@ export const extractCourseId = (
     '[data-ng-bind="ec.teetimeCourseName(t)"]'
   )?.rawText as CourseName | undefined;
 
-  return utils.convertCourseToId(courseName);
+  return convertCourseToId(courseName);
 };
 
 export const extractTeeTime = (
@@ -36,7 +37,7 @@ export const extractTeeTime = (
     '[data-ng-bind="ec.teetimeTimeDisplay(t)"]'
   )?.rawText as ClockTime | undefined;
 
-  return utils.parseTime(searchDate, teeClockTime);
+  return parseTime(searchDate, teeClockTime);
 };
 
 export const extractPrice = (

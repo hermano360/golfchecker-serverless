@@ -1,18 +1,20 @@
 import { Queue } from "sst/node/queue";
-import { SQSEvent } from "../sqs/utils";
 import { Table } from "sst/node/table";
-import * as utils from "../utils";
+import { SQSEvent } from "../sqs/types";
+import { deleteSQSMessage, extendSQSMessageVisibility } from "../sqs/utils";
+import { formatMatches, generateMatchesByUser } from "./utils";
+import { writePutRequests } from "../dynamo/utils";
 
 export async function match(event: SQSEvent) {
   for (const record of event.Records) {
-    await utils.extendSQSMessageVisibility(
+    await extendSQSMessageVisibility(
       Queue.MatchingQueue.queueUrl,
       record.receiptHandle,
       300
     );
 
     if (!record.body) {
-      await utils.deleteSQSMessage(
+      await deleteSQSMessage(
         Queue.MatchingQueue.queueUrl,
         record.receiptHandle
       );
@@ -20,7 +22,7 @@ export async function match(event: SQSEvent) {
 
     const { userId } = JSON.parse(record.body);
     if (!userId) {
-      await utils.deleteSQSMessage(
+      await deleteSQSMessage(
         Queue.MatchingQueue.queueUrl,
         record.receiptHandle
       );
@@ -28,16 +30,13 @@ export async function match(event: SQSEvent) {
     }
 
     try {
-      const { matches, matchedAt } = await utils.generateMatchesByUser(userId);
+      const { matches, matchedAt } = await generateMatchesByUser(userId);
 
-      const formattedMatches = utils.formatMatches(userId, matches, matchedAt);
+      const formattedMatches = formatMatches(userId, matches, matchedAt);
 
-      await utils.writePutRequests(
-        Table.GolfChecker.tableName,
-        formattedMatches
-      );
+      await writePutRequests(Table.GolfChecker.tableName, formattedMatches);
 
-      await utils.deleteSQSMessage(
+      await deleteSQSMessage(
         Queue.MatchingQueue.queueUrl,
         record.receiptHandle
       );
@@ -47,7 +46,7 @@ export async function match(event: SQSEvent) {
         `Had a problem fetching matches for user ${userId}. Trying again`
       );
 
-      await utils.extendSQSMessageVisibility(
+      await extendSQSMessageVisibility(
         Queue.MatchingQueue.queueUrl,
         record.receiptHandle,
         0

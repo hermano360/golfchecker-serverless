@@ -1,11 +1,7 @@
 import AWS from "aws-sdk";
+import { DynamoKeys } from "./types";
 
 export const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
-export type DynamoKeys = {
-  PK: string;
-  SK: string;
-};
 
 export function sectionItemsForSaving<Type>(items: Type[]): Type[][] {
   const itemSections: Type[][] = [[]];

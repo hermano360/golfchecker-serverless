@@ -1,13 +1,10 @@
 import { ApiHandler } from "sst/node/api";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
-
 import duration from "dayjs/plugin/duration";
 import { getPstDayToday } from "../time/utils";
-
-const sqs = new AWS.SQS();
+import { sqs } from "../sqs/utils";
 
 dayjs.extend(utc);
 dayjs.extend(duration);

@@ -1,8 +1,13 @@
 import { ApiHandler } from "sst/node/api";
 import { Table } from "sst/node/table";
 import { randomUUID } from "crypto";
-import * as utils from "../utils";
-import { Alert } from "./utils";
+import {
+  deleteSingleItem,
+  fetchSingleItem,
+  queryPaginationRequests,
+  saveSingleItem,
+} from "../dynamo/utils";
+import { Alert } from "./types";
 
 export const fetchAlerts = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
@@ -25,7 +30,7 @@ export const fetchAlerts = ApiHandler(async (evt) => {
       "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
   };
 
-  const alerts = await utils.queryPaginationRequests(params);
+  const alerts = await queryPaginationRequests(params);
 
   return {
     statusCode: 200,
@@ -52,7 +57,7 @@ export const deleteAlertById = ApiHandler(async (evt) => {
     },
   };
   try {
-    await utils.deleteSingleItem(params);
+    await deleteSingleItem(params);
 
     return {
       statusCode: 200,
@@ -89,7 +94,7 @@ export const fetchAlertById = ApiHandler(async (evt) => {
   };
 
   try {
-    const alert = await utils.fetchSingleItem<Alert>(params);
+    const alert = await fetchSingleItem<Alert>(params);
 
     if (!alert) {
       return {
@@ -142,7 +147,7 @@ export const saveAlerts = ApiHandler(async (evt) => {
       ...data,
     },
   };
-  await utils.saveSingleItem(params);
+  await saveSingleItem(params);
 
   return {
     statusCode: 200,

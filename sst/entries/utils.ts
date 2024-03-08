@@ -1,23 +1,10 @@
 import { parse } from "node-html-parser";
-import * as utils from "../utils";
-import { IsoTimeStamp } from "../time/utils";
-import { DynamoKeys } from "../dynamo/utils";
 import { Table } from "sst/node/table";
-import { CourseId } from "../courses/utils";
-
-export type Price = `$${number}.${number}`;
-
-export type TeeTimeEntry = {
-  courseId: CourseId;
-  teeTime: IsoTimeStamp;
-  numPlayers: number;
-  price: number;
-  numHoles: number;
-};
-
-export type TeeTimeEntryWithKeys = TeeTimeEntry & {
-  updatedAt: IsoTimeStamp;
-} & DynamoKeys;
+import { queryPaginationRequests, writePutRequests } from "../dynamo/utils";
+import { TeeTimeEntry, TeeTimeEntryWithKeys } from "./types";
+import { IsoTimeStamp } from "../time/types";
+import { CourseId } from "../courses/types";
+import { extractTeeTimeEntries } from "../html/utils";
 
 export const fetchEntries = async ({
   startsAt,
@@ -43,7 +30,7 @@ export const fetchEntries = async ({
     ProjectionExpression: "courseId, teeTime, numPlayers, price, numHoles",
   };
 
-  const entries = await utils.queryPaginationRequests<TeeTimeEntry>(params);
+  const entries = await queryPaginationRequests<TeeTimeEntry>(params);
 
   return entries;
 };
@@ -64,7 +51,7 @@ export const generateEntriesFromHtml = (
 ): TeeTimeEntry[] => {
   const root = parse(scrapingText);
 
-  const teeTimeEntries = utils.extractTeeTimeEntries(root);
+  const teeTimeEntries = extractTeeTimeEntries(root);
 
   return teeTimeEntries;
 };
@@ -75,7 +62,7 @@ export const saveEntries = async (
 ): Promise<TeeTimeEntry[]> => {
   const formattedEntries = formatEntries(entries, updatedAt);
 
-  await utils.writePutRequests(Table.GolfChecker.tableName, formattedEntries);
+  await writePutRequests(Table.GolfChecker.tableName, formattedEntries);
 
   return entries;
 };

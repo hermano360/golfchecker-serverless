@@ -3,24 +3,17 @@ import utc from "dayjs/plugin/utc";
 import AWS from "aws-sdk";
 import { Queue } from "sst/node/queue";
 import duration from "dayjs/plugin/duration";
-import { IsoTimeStamp, exceedsElapsedUpdatedAt } from "../time/utils";
-import {
-  SQSEvent,
-  deleteSQSMessage,
-  extendSQSMessageVisibility,
-} from "../sqs/utils";
+import { exceedsElapsedUpdatedAt } from "../time/utils";
+import { deleteSQSMessage, extendSQSMessageVisibility } from "../sqs/utils";
 import { extractFirstValidRecord, scrapingUtility } from "./utils";
 import { setLatestUpdatedAt } from "../updatedAt/utils";
+import { SQSEvent } from "../sqs/types";
+import { ScrapeRequestType } from "./types";
 
 const sqs = new AWS.SQS();
 
 dayjs.extend(utc);
 dayjs.extend(duration);
-
-type ScrapeRequestType = {
-  date: IsoTimeStamp;
-  days: number;
-};
 
 export const scrapeRequest = async (event: SQSEvent) => {
   const record = await extractFirstValidRecord(

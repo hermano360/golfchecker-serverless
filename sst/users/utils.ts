@@ -1,5 +1,5 @@
 import { Table } from "sst/node/table";
-import * as utils from "../utils";
+import { queryPaginationRequests } from "../dynamo/utils";
 
 export const fetchAllUsers = async (): Promise<string[]> => {
   const params = {
@@ -12,7 +12,7 @@ export const fetchAllUsers = async (): Promise<string[]> => {
     ProjectionExpression: "id",
   };
 
-  const users = await utils.queryPaginationRequests<{ id: string }>(params);
+  const users = await queryPaginationRequests<{ id: string }>(params);
 
   return users.map(({ id }) => id);
 };

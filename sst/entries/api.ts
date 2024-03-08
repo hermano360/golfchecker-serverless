@@ -1,7 +1,7 @@
 import { ApiHandler } from "sst/node/api";
-import * as utils from "../utils";
+import { fetchEntries, saveEntries } from "./utils";
 
-export const fetchEntries = ApiHandler(async (evt) => {
+export const fetchEntriesHandler = ApiHandler(async (evt) => {
   const { body } = evt;
 
   if (!body) {
@@ -24,7 +24,7 @@ export const fetchEntries = ApiHandler(async (evt) => {
   }
 
   try {
-    const entries = await entryUtils.fetchEntries({
+    const entries = await fetchEntries({
       startsAt,
       endsAt,
       courseId,
@@ -49,7 +49,7 @@ export const fetchEntries = ApiHandler(async (evt) => {
   }
 });
 
-export const saveEntries = ApiHandler(async (evt) => {
+export const saveEntriesHandler = ApiHandler(async (evt) => {
   const { body } = evt;
   if (!body) {
     return {
@@ -72,7 +72,7 @@ export const saveEntries = ApiHandler(async (evt) => {
   }
 
   try {
-    await utils.saveEntries(entries, updatedAt);
+    await saveEntries(entries, updatedAt);
 
     return {
       statusCode: 200,

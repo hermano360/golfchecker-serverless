@@ -1,23 +1,11 @@
 import { randomUUID } from "crypto";
-import { CourseId } from "../courses/utils";
-import { DynamoKeys } from "../dynamo/utils";
-import { IsoTimeStamp } from "../time/utils";
-import { Alert, AlertSlice } from "../alerts/utils";
-import { Table } from "sst/node/table";
-import * as utils from "../utils";
-
-export type Match = {
-  courseId: CourseId;
-  teeTime: IsoTimeStamp;
-  numPlayers: number;
-  price: number;
-  numHoles: number;
-  updatedAt: IsoTimeStamp;
-};
-
-export type MatchWithKeys = Match & {
-  matchedAt: IsoTimeStamp;
-} & DynamoKeys;
+import { queryPaginationRequests } from "../dynamo/utils";
+import { fetchAlertsByUser, generateAlertSlices } from "../alerts/utils";
+import { getLatestUpdatedAt } from "../updatedAt/utils";
+import { Alert, AlertSlice } from "../alerts/types";
+import { IsoTimeStamp } from "../time/types";
+import { Match, MatchWithKeys } from "./types";
+import { setLatestMatchedAt } from "../matchedAt/utils";
 
 export const formatMatches = (
   userId: string,
@@ -51,7 +39,7 @@ export const fetchMatchesFromAlertSlice = async (
     Select: "ALL_ATTRIBUTES",
   };
 
-  const matches = await utils.queryPaginationRequests<Match>(params);
+  const matches = await queryPaginationRequests<Match>(params);
 
   return matches;
 };
@@ -61,8 +49,8 @@ export const collectMatchesFromAlerts = async (
 ): Promise<Match[]> => {
   console.log("generateAlertSlices");
   console.log(JSON.stringify({ alerts }));
-  const alertSlices = utils.generateAlertSlices(alerts);
-  const updatedAt = await utils.getLatestUpdatedAt();
+  const alertSlices = generateAlertSlices(alerts);
+  const updatedAt = await getLatestUpdatedAt();
 
   const allMatches: Match[] = [];
 
@@ -81,11 +69,11 @@ export const collectMatchesFromAlerts = async (
 export const generateMatchesByUser = async (
   userId: string
 ): Promise<{ matches: Match[]; matchedAt: IsoTimeStamp }> => {
-  const alerts = await utils.fetchAlertsByUser(userId);
+  const alerts = await fetchAlertsByUser(userId);
 
   const matches = await collectMatchesFromAlerts(alerts);
 
-  const matchedAt = await utils.setLatestMatchedAt(userId);
+  const matchedAt = await setLatestMatchedAt(userId);
 
   return {
     matchedAt,
@@ -111,7 +99,7 @@ export const fetchMatchesByUser = async ({
       "courseId, teeTime, numPlayers, price, numHoles, updatedAt",
   };
 
-  const matches = utils.queryPaginationRequests<Match>(params);
+  const matches = queryPaginationRequests<Match>(params);
 
   return matches;
 };

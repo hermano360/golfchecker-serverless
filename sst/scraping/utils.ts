@@ -1,7 +1,8 @@
 import axios from "axios";
-import { DateSlash, IsoTimeStamp } from "../time/utils";
+import { DateSlash, IsoTimeStamp } from "../time/types";
 import { generateEntriesFromHtml, saveEntries } from "../entries/utils";
-import { SQSRecord, deleteSQSMessage } from "../sqs/utils";
+import { SQSRecord } from "../sqs/types";
+import { deleteSQSMessage } from "../sqs/utils";
 
 export const fetchScraping = (
   date: DateSlash,

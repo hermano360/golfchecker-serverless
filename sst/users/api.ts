@@ -1,6 +1,7 @@
 import { ApiHandler } from "sst/node/api";
 import { Table } from "sst/node/table";
-import * as utils from "../utils";
+import { saveSingleItem } from "../dynamo/utils";
+import { fetchAllUsers } from "./utils";
 
 export const saveUser = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
@@ -14,7 +15,7 @@ export const saveUser = ApiHandler(async (evt) => {
     },
   };
 
-  await utils.saveSingleItem(params);
+  await saveSingleItem(params);
 
   return {
     statusCode: 200,
@@ -22,8 +23,8 @@ export const saveUser = ApiHandler(async (evt) => {
   };
 });
 
-export const fetchAllUsers = ApiHandler(async (evt) => {
-  const users = await utils.fetchAllUsers();
+export const fetchAllUsersHandler = ApiHandler(async (evt) => {
+  const users = await fetchAllUsers();
 
   return {
     statusCode: 200,

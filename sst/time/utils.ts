@@ -1,47 +1,18 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import duration from "dayjs/plugin/duration";
-import * as utils from "../utils";
+import {
+  ClockTime,
+  DateDash,
+  DateSlash,
+  IsoTimeStamp,
+  MonthName,
+  NumericalMonth,
+} from "./types";
+import { getLatestUpdatedAt } from "../updatedAt/utils";
 
 dayjs.extend(utc);
 dayjs.extend(duration);
-
-export type DateSlash = `${number}/${number}/${number}`;
-export type DateDash = `${number}-${number}-${number}`;
-
-export type IsoTimeStamp =
-  `${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`;
-
-export type AmOrPm = "AM" | "PM";
-
-export type ClockTime = `${number}:${number} ${AmOrPm}`;
-
-type NumericalMonth =
-  | "01"
-  | "02"
-  | "03"
-  | "04"
-  | "05"
-  | "06"
-  | "07"
-  | "08"
-  | "09"
-  | "10"
-  | "11"
-  | "12";
-type MonthName =
-  | "January"
-  | "February"
-  | "March"
-  | "April"
-  | "May"
-  | "June"
-  | "July"
-  | "August"
-  | "September"
-  | "October"
-  | "November"
-  | "December";
 
 const monthMap: Record<NumericalMonth, MonthName> = {
   "01": "January",
@@ -101,7 +72,7 @@ export const parseTime = (
 export const exceedsElapsedUpdatedAt = async (
   expectedSecondsTimeout: number
 ): Promise<boolean> => {
-  const updatedAt = await utils.getLatestUpdatedAt();
+  const updatedAt = await getLatestUpdatedAt();
 
   const secondsSinceLastUpdated = dayjs
     .duration(dayjs.utc().diff(dayjs(updatedAt)))

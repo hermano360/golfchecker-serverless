@@ -1,23 +1,7 @@
 import { Table } from "sst/node/table";
-import * as utils from "../utils";
-import { ClockTime, DateDash, IsoTimeStamp } from "../time/utils";
-
-export type Alert = {
-  startTime: ClockTime;
-  endTime: ClockTime;
-  userId: string;
-  courseId: string;
-  numPlayers: number;
-  id: string;
-  startDate: DateDash;
-  endDate: DateDash;
-};
-
-export type AlertSlice = {
-  startsAt: IsoTimeStamp;
-  endsAt: IsoTimeStamp;
-  courseId: string;
-};
+import { Alert, AlertSlice } from "./types";
+import { queryPaginationRequests } from "../dynamo/utils";
+import { generateDateTimeRangeList } from "../time/utils";
 
 export const fetchAlertsByUser = async (userId: string): Promise<Alert[]> => {
   const params = {
@@ -31,14 +15,14 @@ export const fetchAlertsByUser = async (userId: string): Promise<Alert[]> => {
       "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
   };
 
-  const alerts = await utils.queryPaginationRequests<Alert>(params);
+  const alerts = await queryPaginationRequests<Alert>(params);
 
   return alerts;
 };
 
 export const generateAlertSlicesFromAlert = (alert: Alert): AlertSlice[] => {
   console.log({ alert });
-  const timeSegments = utils.generateDateTimeRangeList(
+  const timeSegments = generateDateTimeRangeList(
     alert.startTime,
     alert.startDate,
     alert.endTime,
