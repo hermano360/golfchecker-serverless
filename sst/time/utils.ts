@@ -7,6 +7,7 @@ dayjs.extend(utc);
 dayjs.extend(duration);
 
 export type DateSlash = `${number}/${number}/${number}`;
+export type DateDash = `${number}-${number}-${number}`;
 
 export type IsoTimeStamp =
   `${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`;
@@ -107,4 +108,52 @@ export const exceedsElapsedUpdatedAt = async (
     .asSeconds();
 
   return secondsSinceLastUpdated > expectedSecondsTimeout;
+};
+
+export const minutesSinceMidnight = (time: ClockTime): number => {
+  const [hourMin, dayPeriod] = time.split(" ");
+  const isAfternoon = dayPeriod === "PM";
+  const [hour, min] = hourMin.split(":");
+
+  const parsedHour = parseInt(hour) % 12;
+  const parsedMin = parseInt(min);
+
+  const calculatedHour = parsedHour + (isAfternoon ? 12 : 0);
+
+  return parsedMin + calculatedHour * 60;
+};
+
+export const generateDateTimeRangeList = (
+  startTime: ClockTime,
+  startDate: DateDash,
+  endTime: ClockTime,
+  endDate: DateDash
+): { startsAt: IsoTimeStamp; endsAt: IsoTimeStamp }[] => {
+  console.log({ startTime, startDate, endTime, endDate });
+
+  const dayDifference = Math.ceil(
+    dayjs.duration(dayjs.utc(endDate).diff(dayjs.utc(startDate))).asDays()
+  );
+
+  const startTimeAsMinutes = minutesSinceMidnight(startTime);
+  const endTimeAsMinutes = minutesSinceMidnight(endTime);
+
+  const dateRange = Array(dayDifference + 1)
+    .fill(0)
+    .map((_, i) => {
+      return dayjs.utc(startDate).add(i, "days");
+    });
+
+  const dateTimeRange = dateRange.map((dateItem) => ({
+    startsAt: dateItem
+      .add(startTimeAsMinutes, "minutes")
+      .subtract(CURRENT_GMT_PST_OFFSET, "hours")
+      .toISOString() as IsoTimeStamp,
+    endsAt: dateItem
+      .add(endTimeAsMinutes, "minutes")
+      .subtract(CURRENT_GMT_PST_OFFSET, "hours")
+      .toISOString() as IsoTimeStamp,
+  }));
+
+  return dateTimeRange;
 };

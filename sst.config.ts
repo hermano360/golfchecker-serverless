@@ -44,12 +44,18 @@ export default {
 
       const matchingQueue = new Queue(stack, "MatchingQueue", {
         consumer: {
-          function: "packages/functions/src/queue.match",
+          function: "sst/matches/queue.match",
+          // cdk: {
+          //   eventSource: {
+          //     batchSize: 50,
+          //     maxBatchingWindow: Duration.seconds(60),
+          //   },
+          // },
         },
       });
 
       fetchingQueue.bind([table, fetchingQueue]);
-      matchingQueue.bind([table]);
+      matchingQueue.bind([table, matchingQueue]);
 
       queue.bind([table, fetchingQueue, queue]);
 
@@ -71,7 +77,7 @@ export default {
           "POST /entities": "packages/functions/src/entities.fetchEntities",
           "POST /entities/set": "packages/functions/src/entities.setEntities",
           "POST /scrape": "sst/scraping/api.initiateEntryFetching",
-          "GET /matches": "packages/functions/src/matches.main",
+          "GET /matches": "sst/matches/api.initiateMatchesFetching",
           "GET /matches/{userId}":
             "packages/functions/src/matches.fetchMatchesByUser",
           "GET /alerts/{userId}": "packages/functions/src/alerts.fetchAlerts",

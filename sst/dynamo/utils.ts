@@ -21,8 +21,20 @@ export function sectionItemsForSaving<Type>(items: Type[]): Type[][] {
   return itemSections;
 }
 
-export function generatePutRequests<Type>(items: Type[] = []) {
-  const putRequests = items.map((item) => ({
+export function dedupePutRequestItems<Type>(items: (Type & DynamoKeys)[]) {
+  const itemMapping: Record<string, Type> = {};
+
+  items.forEach((item) => {
+    itemMapping[item.PK.concat(item.SK)] = item;
+  });
+
+  return Object.values(itemMapping);
+}
+
+export function generatePutRequests<Type>(items: (Type & DynamoKeys)[] = []) {
+  const dedupedItems = dedupePutRequestItems(items);
+
+  const putRequests = dedupedItems.map((item) => ({
     PutRequest: {
       Item: item,
     },
@@ -35,7 +47,7 @@ export function generatePutRequests<Type>(items: Type[] = []) {
 
 export async function writePutRequests<Type>(
   tableName: string,
-  items: Type[] = []
+  items: (Type & DynamoKeys)[] = []
 ) {
   const putRequestCollection = generatePutRequests(items);
 
@@ -49,4 +61,25 @@ export async function writePutRequests<Type>(
       await dynamoDb.batchWrite({ RequestItems }).promise();
     }
   }
+}
+
+export async function queryPaginationRequests<Type>(
+  params: AWS.DynamoDB.DocumentClient.QueryInput
+): Promise<Type[]> {
+  const itemsCollection: Type[] = [];
+
+  let ExclusiveStartKey = undefined;
+  let isItemsListEmpty = false;
+  let result;
+
+  do {
+    result = await dynamoDb.query({ ...params, ExclusiveStartKey }).promise();
+    const items: Type[] = result.Items as Type[];
+
+    itemsCollection.push(...items);
+    ExclusiveStartKey = result.LastEvaluatedKey;
+    isItemsListEmpty = items.length === 0;
+  } while (ExclusiveStartKey && !isItemsListEmpty);
+
+  return itemsCollection;
 }

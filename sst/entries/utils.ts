@@ -4,7 +4,6 @@ import { extractTeeTimeEntries } from "../html/utils";
 import { IsoTimeStamp } from "../time/utils";
 import { DynamoKeys, writePutRequests } from "../dynamo/utils";
 import { Table } from "sst/node/table";
-import { SCRAPE_TEXT } from "../../packages/utils/data/scraping";
 
 export type Price = `$${number}.${number}`;
 
