@@ -2,8 +2,38 @@ import { ApiHandler } from "sst/node/api";
 import AWS from "aws-sdk";
 import { Table } from "sst/node/table";
 import { randomUUID } from "crypto";
+import { fetchSingleItem, queryPaginationRequests } from "../dynamo/utils";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
+export const fetchAlerts = ApiHandler(async (evt) => {
+  const userId = evt.pathParameters?.userId;
+
+  if (!userId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
+
+  const params = {
+    TableName: Table.GolfChecker.tableName,
+    KeyConditionExpression: `PK = :PK`,
+    ExpressionAttributeValues: {
+      ":PK": `alert#userId#${userId}`,
+    },
+    Select: "SPECIFIC_ATTRIBUTES",
+    ProjectionExpression:
+      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
+  };
+
+  const alerts = await queryPaginationRequests(params);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(alerts),
+  };
+});
 
 export const deleteAlertById = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
@@ -36,6 +66,36 @@ export const deleteAlertById = ApiHandler(async (evt) => {
       body: `There was an error deleting alertId ${alertId}`,
     };
   }
+});
+
+export const fetchAlertById = ApiHandler(async (evt) => {
+  const userId = evt.pathParameters?.userId;
+  const alertId = evt.pathParameters?.alertId;
+
+  if (!userId || !alertId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
+
+  const params = {
+    TableName: Table.GolfChecker.tableName,
+    Key: {
+      PK: `alert#userId#${userId}`,
+      SK: `alertId#${alertId}`,
+    },
+    Select: "SPECIFIC_ATTRIBUTES",
+    ProjectionExpression:
+      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
+  };
+
+  const alert = await fetchSingleItem(params);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(alert),
+  };
 });
 
 export const setAlerts = ApiHandler(async (evt) => {

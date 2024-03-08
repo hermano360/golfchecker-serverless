@@ -83,3 +83,12 @@ export async function queryPaginationRequests<Type>(
 
   return itemsCollection;
 }
+
+export async function fetchSingleItem<Type>(
+  params: AWS.DynamoDB.DocumentClient.GetItemInput
+): Promise<Type | undefined> {
+  const result = await dynamoDb.get(params).promise();
+  const item = result.Item as Type;
+
+  return item;
+}

@@ -77,7 +77,7 @@ export default {
           "POST /scrape": "sst/scraping/api.initiateEntryFetching",
           "GET /matches": "sst/matches/api.initiateMatchesFetching",
           "GET /matches/{userId}": "sst/matches/api.fetchMatchesByUser",
-          "GET /alerts/{userId}": "packages/functions/src/alerts.fetchAlerts",
+          "GET /alerts/{userId}": "sst/alerts/api.fetchAlerts",
           "GET /alerts/{userId}/{alertId}":
             "packages/functions/src/alerts.fetchAlertById",
           "DELETE /alerts/{userId}/{alertId}":
