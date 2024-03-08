@@ -4,10 +4,9 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { IsoTimeStamp } from "../time/utils";
 import { StringConditions } from "aws-cdk-lib/aws-sns";
+import { dynamoDb } from "../dynamo/utils";
 
 dayjs.extend(utc);
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export const setLatestMatchedAt = async (
   userId: string

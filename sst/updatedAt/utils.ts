@@ -1,12 +1,10 @@
-import AWS from "aws-sdk";
 import dayjs from "dayjs";
 import { Table } from "sst/node/table";
 import utc from "dayjs/plugin/utc";
 import { IsoTimeStamp } from "../time/utils";
+import { dynamoDb } from "../dynamo/utils";
 
 dayjs.extend(utc);
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export const getLatestUpdatedAt = async (): Promise<
   IsoTimeStamp | undefined

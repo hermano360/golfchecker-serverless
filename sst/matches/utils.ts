@@ -11,9 +11,6 @@ import {
 } from "../alerts/utils";
 import { getLatestUpdatedAt } from "../updatedAt/utils";
 import { Table } from "sst/node/table";
-import AWS from "aws-sdk";
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export type Match = {
   courseId: CourseId;

@@ -1,10 +1,11 @@
 import { ApiHandler } from "sst/node/api";
-import AWS from "aws-sdk";
 import { Table } from "sst/node/table";
 import { randomUUID } from "crypto";
-import { fetchSingleItem, queryPaginationRequests } from "../dynamo/utils";
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+import {
+  dynamoDb,
+  fetchSingleItem,
+  queryPaginationRequests,
+} from "../dynamo/utils";
 
 export const fetchAlerts = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
