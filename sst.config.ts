@@ -69,17 +69,14 @@ export default {
           "GET /": "packages/functions/src/time.handler",
           "GET /updatedAt": "packages/functions/src/updatedAt.getLatest",
           "POST /updatedAt": "packages/functions/src/updatedAt.setLatest",
-          "GET /matchedAt/{userId}":
-            "packages/functions/src/matchedAt.getLatestMatchedAt",
-          "POST /matchedAt/{userId}":
-            "packages/functions/src/matchedAt.setLatestMatchedAt",
+          "GET /matchedAt/{userId}": "sst/matchedAt/api.getLatestMatchedAt",
+          "POST /matchedAt/{userId}": "sst/matchedAt/api.setLatestMatchedAt",
           "GET /courses": "packages/functions/src/courses.fetchCourses",
           "POST /entities": "packages/functions/src/entities.fetchEntities",
           "POST /entities/set": "packages/functions/src/entities.setEntities",
           "POST /scrape": "sst/scraping/api.initiateEntryFetching",
           "GET /matches": "sst/matches/api.initiateMatchesFetching",
-          "GET /matches/{userId}":
-            "packages/functions/src/matches.fetchMatchesByUser",
+          "GET /matches/{userId}": "sst/matches/api.fetchMatchesByUser",
           "GET /alerts/{userId}": "packages/functions/src/alerts.fetchAlerts",
           "GET /alerts/{userId}/{alertId}":
             "packages/functions/src/alerts.fetchAlertById",

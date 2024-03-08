@@ -1,12 +1,5 @@
 import { ApiHandler } from "sst/node/api";
-import AWS from "aws-sdk";
-
-import {
-  getLatestMatchedAtUtil,
-  setLatestMatchedAtUtil,
-} from "../../utils/matchedAt";
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+import * as matchedAtUtils from "../matchedAt/utils";
 
 export const getLatestMatchedAt = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
@@ -19,7 +12,7 @@ export const getLatestMatchedAt = ApiHandler(async (evt) => {
   }
 
   try {
-    const { matchedAt } = await getLatestMatchedAtUtil(userId);
+    const matchedAt = await matchedAtUtils.getLatestMatchedAt(userId);
 
     return {
       statusCode: 200,
@@ -49,7 +42,7 @@ export const setLatestMatchedAt = ApiHandler(async (evt) => {
     };
   }
   try {
-    const { matchedAt } = await setLatestMatchedAtUtil(userId);
+    const matchedAt = await matchedAtUtils.setLatestMatchedAt(userId);
 
     return {
       statusCode: 200,

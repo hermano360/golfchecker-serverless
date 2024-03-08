@@ -4,7 +4,7 @@ import {
   deleteSQSMessage,
   extendSQSMessageVisibility,
 } from "../sqs/utils";
-import { fetchMatchesByUser, formatMatches } from "./utils";
+import { formatMatches, generateMatchesByUser } from "./utils";
 import { writePutRequests } from "../dynamo/utils";
 import { Table } from "sst/node/table";
 
@@ -33,7 +33,7 @@ export async function match(event: SQSEvent) {
     }
 
     try {
-      const { matches, matchedAt } = await fetchMatchesByUser(userId);
+      const { matches, matchedAt } = await generateMatchesByUser(userId);
 
       const formattedMatches = formatMatches(userId, matches, matchedAt);
 

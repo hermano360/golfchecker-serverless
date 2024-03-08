@@ -87,7 +87,7 @@ export const collectMatchesFromAlerts = async (
   return allMatches;
 };
 
-export const fetchMatchesByUser = async (
+export const generateMatchesByUser = async (
   userId: string
 ): Promise<{ matches: Match[]; matchedAt: IsoTimeStamp }> => {
   const alerts = await fetchAlertsByUser(userId);
@@ -100,4 +100,27 @@ export const fetchMatchesByUser = async (
     matchedAt,
     matches,
   };
+};
+
+export const fetchMatchesByUser = async ({
+  userId,
+  matchedAt,
+}: {
+  userId: string;
+  matchedAt: IsoTimeStamp;
+}): Promise<Match[]> => {
+  const params = {
+    TableName: Table.GolfChecker.tableName,
+    KeyConditionExpression: `PK = :PK`,
+    ExpressionAttributeValues: {
+      ":PK": `match#userId#${userId}#matchedAt#${matchedAt}`,
+    },
+    Select: "SPECIFIC_ATTRIBUTES",
+    ProjectionExpression:
+      "courseId, teeTime, numPlayers, price, numHoles, updatedAt",
+  };
+
+  const matches = queryPaginationRequests<Match>(params);
+
+  return matches;
 };
