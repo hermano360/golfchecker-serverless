@@ -1,18 +1,9 @@
 import { ApiHandler } from "sst/node/api";
-import AWS from "aws-sdk";
-// import * as uuid from "uuid";
-// import { ApiGatewayProxyEventV2 } from "aws-lambda";
-import { Table } from "sst/node/table";
-import {
-  getLatestUpdatedAt,
-  setLatestUpdatedAt,
-} from "../../../sst/updatedAt/utils";
+import * as updatedAtUtils from "./utils";
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
-export const getLatest = ApiHandler(async () => {
+export const getLatestUpdatedAt = ApiHandler(async () => {
   try {
-    const updatedAt = await getLatestUpdatedAt();
+    const updatedAt = await updatedAtUtils.getLatestUpdatedAt();
 
     return {
       statusCode: 200,
@@ -32,9 +23,9 @@ export const getLatest = ApiHandler(async () => {
   }
 });
 
-export const setLatest = ApiHandler(async (evt) => {
+export const setLatestUpdatedAt = ApiHandler(async (evt) => {
   try {
-    const updatedAt = await setLatestUpdatedAt();
+    const updatedAt = await updatedAtUtils.setLatestUpdatedAt();
 
     return {
       statusCode: 200,

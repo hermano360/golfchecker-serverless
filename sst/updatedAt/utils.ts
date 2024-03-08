@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { Table } from "sst/node/table";
 import utc from "dayjs/plugin/utc";
 import { IsoTimeStamp } from "../time/utils";
-import { dynamoDb } from "../dynamo/utils";
+import { dynamoDb, saveSingleItem } from "../dynamo/utils";
 
 dayjs.extend(utc);
 
@@ -42,7 +42,7 @@ export const setLatestUpdatedAt = async (): Promise<
     },
   };
 
-  await dynamoDb.put(params).promise();
+  await saveSingleItem(params);
 
   return currentTimeStamp;
 };

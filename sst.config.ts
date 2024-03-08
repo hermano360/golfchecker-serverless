@@ -66,9 +66,8 @@ export default {
           },
         },
         routes: {
-          "GET /": "packages/functions/src/time.handler",
-          "GET /updatedAt": "packages/functions/src/updatedAt.getLatest",
-          "POST /updatedAt": "packages/functions/src/updatedAt.setLatest",
+          "GET /updatedAt": "sst/updatedAt/api.getLatestUpdatedAt",
+          "POST /updatedAt": "sst/updatedAt/api.setLatestUpdatedAt",
           "GET /matchedAt/{userId}": "sst/matchedAt/api.getLatestMatchedAt",
           "POST /matchedAt/{userId}": "sst/matchedAt/api.setLatestMatchedAt",
           "GET /courses": "sst/courses/api.fetchCourses",
@@ -81,9 +80,8 @@ export default {
           "GET /alerts/{userId}/{alertId}": "sst/alerts/api.fetchAlertById",
           "DELETE /alerts/{userId}/{alertId}": "sst/alerts/api.deleteAlertById",
           "POST /alerts": "sst/alerts/api.saveAlerts",
-          "GET /users": "packages/functions/src/users.fetchUsers",
-          "GET /users/{userId}/register":
-            "packages/functions/src/users.registerUser",
+          "GET /users": "sst/users/api.fetchAllUsers",
+          "GET /users/{userId}/register": "sst/users/api.saveUser",
         },
       });
 

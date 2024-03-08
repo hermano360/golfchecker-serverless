@@ -92,3 +92,10 @@ export async function fetchSingleItem<Type>(
 
   return item;
 }
+
+export async function saveSingleItem<Type>(
+  params: AWS.DynamoDB.DocumentClient.PutItemInput
+): Promise<undefined> {
+  await dynamoDb.put(params).promise();
+  return;
+}

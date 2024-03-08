@@ -1,10 +1,9 @@
-import AWS from "aws-sdk";
 import { Table } from "sst/node/table";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { IsoTimeStamp } from "../time/utils";
 import { StringConditions } from "aws-cdk-lib/aws-sns";
-import { dynamoDb } from "../dynamo/utils";
+import { dynamoDb, saveSingleItem } from "../dynamo/utils";
 
 dayjs.extend(utc);
 
@@ -23,7 +22,7 @@ export const setLatestMatchedAt = async (
     },
   };
 
-  await dynamoDb.put(params).promise();
+  await saveSingleItem(params);
 
   return matchedAt;
 };

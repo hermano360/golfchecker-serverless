@@ -5,6 +5,7 @@ import {
   dynamoDb,
   fetchSingleItem,
   queryPaginationRequests,
+  saveSingleItem,
 } from "../dynamo/utils";
 import { Alert } from "./utils";
 
@@ -146,8 +147,7 @@ export const saveAlerts = ApiHandler(async (evt) => {
       ...data,
     },
   };
-
-  await dynamoDb.put(params).promise();
+  await saveSingleItem(params);
 
   return {
     statusCode: 200,
