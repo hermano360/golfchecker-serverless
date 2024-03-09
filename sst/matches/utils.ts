@@ -6,6 +6,7 @@ import { Alert, AlertSlice } from "../alerts/types";
 import { IsoTimeStamp } from "../time/types";
 import { Match, MatchWithKeys } from "./types";
 import { setLatestMatchedAt } from "../matchedAt/utils";
+import { Table } from "sst/node/table";
 
 export const formatMatches = (
   userId: string,
