@@ -1,15 +1,15 @@
 import { ClockTime, DateDash, IsoTimeStamp } from "../time/types";
 
-export type Alert = {
+export type AlertRequest = {
   startTime: ClockTime;
   endTime: ClockTime;
   userId: string;
   courseId: string;
   numPlayers: number;
-  id: string;
   startDate: DateDash;
   endDate: DateDash;
 };
+export type Alert = AlertRequest & { id: string };
 
 export type AlertSlice = {
   startsAt: IsoTimeStamp;

@@ -1,11 +1,7 @@
 import axios from "axios";
+import { Course } from "../../../sst/courses/types";
 
-type Course = {
-  id: string;
-  name: string;
-};
-
-const fetchCoursesFromApi = async () => {
+const fetchCoursesFromApi = async (): Promise<Course[]> => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
   return new Promise((resolve, reject) => {
     axios
@@ -15,23 +11,8 @@ const fetchCoursesFromApi = async () => {
   });
 };
 
-export async function fetchCourses(): Course[] {
+export async function fetchCourses(): Promise<Course[]> {
   const courses = await fetchCoursesFromApi();
 
   return courses;
-}
-
-export function fetchCourseById(courseId: string): Course | undefined {
-  const courses = {
-    abc: {
-      id: "abc",
-      name: "Roosevelt",
-    },
-    def: {
-      id: "def",
-      name: "Wilson",
-    },
-  };
-
-  return courses[courseId];
 }

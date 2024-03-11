@@ -14,7 +14,7 @@ import { getLatestUpdatedAt } from "../updatedAt/utils";
 dayjs.extend(utc);
 dayjs.extend(duration);
 
-const monthMap: Record<NumericalMonth, MonthName> = {
+export const MonthMap: Record<NumericalMonth, MonthName> = {
   "01": "January",
   "02": "February",
   "03": "March",
@@ -62,7 +62,7 @@ export const parseTime = (
 
   const [hour, min] = hourMin.split(":");
 
-  const teeTimeDate = `${monthMap[month as NumericalMonth]} ${day}, ${year} ${
+  const teeTimeDate = `${MonthMap[month as NumericalMonth]} ${day}, ${year} ${
     isAfternoon ? (parseInt(hour) % 12) + 12 : hour
   }:${min}:00 ${convertOffsetToGmtOffset(gmtOffset)}`;
 

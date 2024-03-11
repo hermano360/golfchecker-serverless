@@ -81,7 +81,7 @@ export default {
           "GET /alerts/{userId}": "sst/alerts/api.fetchAlerts",
           "GET /alerts/{userId}/{alertId}": "sst/alerts/api.fetchAlertById",
           "DELETE /alerts/{userId}/{alertId}": "sst/alerts/api.deleteAlertById",
-          "POST /alerts": "sst/alerts/api.saveAlerts",
+          "POST /alerts": "sst/alerts/api.saveAlert",
           "GET /users": "sst/users/api.fetchAllUsersHandler",
           "GET /users/{userId}/register": "sst/users/api.saveUser",
         },

@@ -1,9 +1,8 @@
-import type { Alert } from "@prisma/client";
-import { db } from "@/db";
 import { auth } from "@/auth";
 import axios from "axios";
+import { Alert } from "../../../sst/alerts/types";
 
-const fetchAlertsByUserId = (userId: string) => {
+const fetchAlertsByUserId = (userId: string): Promise<Alert[]> => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   return new Promise((resolve, reject) => {
@@ -14,7 +13,10 @@ const fetchAlertsByUserId = (userId: string) => {
   });
 };
 
-const fetchAlertByIdApi = (userId: string, alertId: string) => {
+const fetchAlertByIdApi = (
+  userId: string,
+  alertId: string
+): Promise<Alert | undefined> => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   return new Promise((resolve, reject) => {

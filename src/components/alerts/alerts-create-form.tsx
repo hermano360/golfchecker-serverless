@@ -1,15 +1,21 @@
 "use client";
 
-import { today, getLocalTimeZone } from "@internationalized/date";
+import { today, getLocalTimeZone, CalendarDate } from "@internationalized/date";
 import { useFormState } from "react-dom";
 import * as actions from "@/actions";
 import { Button, Input, Select, SelectItem, Slider } from "@nextui-org/react";
 import { RangeCalendar } from "@adobe/react-spectrum";
 import { useState } from "react";
-import { fetchCourses } from "@/db/queries/courses";
 import { ErrorMessage } from "../common/error-message";
+import { Course } from "../../../sst/courses/types";
 
-export default function AlertCreateForm({ courses = [] }) {
+interface AlertCreateFormProps {
+  courses: Course[];
+}
+
+export default function AlertCreateForm({
+  courses = [],
+}: AlertCreateFormProps) {
   const [formState, action] = useFormState(actions.createAlert, { errors: {} });
 
   const [startDate, setStartDate] = useState(today(getLocalTimeZone()));
@@ -17,7 +23,13 @@ export default function AlertCreateForm({ courses = [] }) {
     today(getLocalTimeZone()).add({ days: 3 })
   );
 
-  const handleCalendarChange = ({ start, end }) => {
+  const handleCalendarChange = ({
+    start,
+    end,
+  }: {
+    start: CalendarDate;
+    end: CalendarDate;
+  }) => {
     setStartDate(start);
     setEndDate(end);
   };

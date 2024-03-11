@@ -1,3 +1,6 @@
+import { NumericalMonth } from "../../sst/time/types";
+import { MonthMap } from "../../sst/time/utils";
+
 export const alertTimeFormatter = (time: number) => {
   const isMorning = time < 720;
   const hours = Math.floor(time / 60);
@@ -11,22 +14,11 @@ export const alertTimeFormatter = (time: number) => {
 };
 
 export const formatDateDisplay = (date: string) => {
-  const [year, month, day] = date.split("-");
+  const dateSplit = date.split("-");
 
-  const monthMap = {
-    "01": "January",
-    "02": "February",
-    "03": "March",
-    "04": "April",
-    "05": "May",
-    "06": "June",
-    "07": "July",
-    "08": "August",
-    "09": "September",
-    "10": "October",
-    "11": "November",
-    "12": "December",
-  };
+  const year = date[0];
+  const month = date[1] as NumericalMonth;
+  const day = date[2];
 
-  return `${monthMap[month]} ${parseInt(day)}, ${year}`;
+  return `${MonthMap[month]} ${parseInt(day)}, ${year}`;
 };

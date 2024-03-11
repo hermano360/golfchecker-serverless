@@ -115,7 +115,7 @@ export const fetchAlertById = ApiHandler(async (evt) => {
   }
 });
 
-export const saveAlerts = ApiHandler(async (evt) => {
+export const saveAlert = ApiHandler(async (evt) => {
   if (!evt.body) {
     return {
       statusCode: 400,

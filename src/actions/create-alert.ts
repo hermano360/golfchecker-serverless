@@ -2,11 +2,12 @@
 
 import { auth } from "@/auth";
 import paths from "@/paths";
-import { Alert } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import axios from "axios";
+import { Alert, AlertRequest } from "../../sst/alerts/types";
+import { ClockTime, DateDash } from "../../sst/time/types";
 
 const createAlertSchema = z.object({
   courseId: z.string().min(1),
@@ -62,15 +63,15 @@ const parseTime = (time: string) => {
 const formatTimeToCardinality = (time: string) => {
   const [hours, minutes] = time.split(":");
 
-  const parsedHours = parseInt(hours);
+  const parsedHours = parseInt(hours) % 12;
   const isMorning = parsedHours < 12;
 
-  return `${
-    parsedHours === 0 ? "12" : isMorning ? parsedHours : parsedHours - 12
-  }:${minutes} ${isMorning ? "AM" : "PM"}`;
+  return `${parsedHours === 0 ? "12" : parsedHours}:${minutes} ${
+    isMorning ? "AM" : "PM"
+  }` as ClockTime;
 };
 
-const submitCreateAlert = (data) => {
+const submitCreateAlert = (data: AlertRequest): Promise<Alert> => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
   return new Promise((resolve, reject) => {
     axios
@@ -131,13 +132,13 @@ export async function createAlert(
     };
   }
 
-  let alert;
+  let alert: Alert;
   const createAlertData = {
     courseId: data.courseId,
     startTime: parseTime(data.startTime),
     endTime: parseTime(data.endTime),
-    startDate: data.startDate,
-    endDate: data.endDate,
+    startDate: data.startDate as DateDash,
+    endDate: data.endDate as DateDash,
     numPlayers: parseInt(data.numPlayers),
     userId: session.user.id,
   };

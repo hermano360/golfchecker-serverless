@@ -1,9 +1,9 @@
 import { fetchCourses } from "@/db/queries/courses";
-import { alertTimeFormatter, formatDateDisplay } from "@/utils/dates";
 import { processMatchesByCourse } from "@/utils/matches";
+import { Match } from "../../../sst/matches/types";
 
 interface AlertListProps {
-  fetchData: () => Promise<any[]>;
+  fetchData: () => Promise<Match[]>;
 }
 
 export default async function MatchList({ fetchData }: AlertListProps) {
@@ -13,7 +13,7 @@ export default async function MatchList({ fetchData }: AlertListProps) {
   const matchesByCourse = processMatchesByCourse(matches);
 
   const renderedMatches = matchesByCourse.map((entry) => {
-    const [courseId, matches] = entry;
+    const { courseId, matches } = entry;
     const course = courses.find(({ id }) => id === courseId);
 
     return (
@@ -21,7 +21,7 @@ export default async function MatchList({ fetchData }: AlertListProps) {
         <h1 className="text-xl mb-1 font-bold">{course?.name}</h1>
 
         {matches.map((match) => {
-          const [teeTimeDay, teeTimeSlots = []] = match;
+          const { day: teeTimeDay, times: teeTimeSlots = [] } = match;
           return (
             <div key={`${course?.name}-${match}`}>
               <h1 className="text-lg mb-1">{teeTimeDay}</h1>
@@ -43,21 +43,6 @@ export default async function MatchList({ fetchData }: AlertListProps) {
       </div>
     );
   });
-
-  //   const renderedMatches = matchesByCourse.map(((entry), i) => {
-  //     const course = courses.find(({ id }) => id === entry[0]);
-
-  //     return (
-  //         <div>{course}</div>
-  //     //   <Link key={match.id || i} href={`/match/${match.id}`}>
-  //     //     <div className="border rounded p-2 mb-2">
-  //     //       {course ? <h1 className="text-lg mb-1">{course.name}</h1> : null}
-
-  //     //       <div className="text-md font-bold">{`${match.teeTime}`}</div>
-  //     //     </div>
-  //     //   </Link>
-  //     );
-  //   });
 
   return <div className="space-y-2">{renderedMatches}</div>;
 }

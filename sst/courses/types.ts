@@ -21,3 +21,8 @@ export type CourseName =
   | "Roosevelt"
   | "Sepulveda - Balboa"
   | "Sepulveda - Encino";
+
+export type Course = {
+  id: CourseId;
+  name: CourseName;
+};

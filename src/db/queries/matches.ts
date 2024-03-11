@@ -1,9 +1,8 @@
-import type { Alert } from "@prisma/client";
-import { db } from "@/db";
 import { auth } from "@/auth";
 import axios from "axios";
+import { Match } from "../../../sst/matches/types";
 
-const fetchMatchesByUserId = (userId: string) => {
+const fetchMatchesByUserId = (userId: string): Promise<Match[]> => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   return new Promise((resolve, reject) => {
