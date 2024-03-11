@@ -1,11 +1,11 @@
 import axios from "axios";
 import { Course } from "../../../sst/courses/types";
+import { API_URL } from "@/utils/constants";
 
 const fetchCoursesFromApi = async (): Promise<Course[]> => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
   return new Promise((resolve, reject) => {
     axios
-      .get(`${apiUrl}/courses`)
+      .get(`${API_URL}/courses`)
       .then((response) => resolve(response.data))
       .catch((err) => reject(err));
   });

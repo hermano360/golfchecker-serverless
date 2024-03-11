@@ -8,6 +8,7 @@ import { z } from "zod";
 import axios from "axios";
 import { Alert, AlertRequest } from "../../sst/alerts/types";
 import { ClockTime, DateDash } from "../../sst/time/types";
+import { API_URL } from "@/utils/constants";
 
 const createAlertSchema = z.object({
   courseId: z.string().min(1),
@@ -72,10 +73,9 @@ const formatTimeToCardinality = (time: string) => {
 };
 
 const submitCreateAlert = (data: AlertRequest): Promise<Alert> => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
   return new Promise((resolve, reject) => {
     axios
-      .post(`${apiUrl}/alerts`, data)
+      .post(`${API_URL}/alerts`, data)
       .then(function (response) {
         resolve(response.data);
       })

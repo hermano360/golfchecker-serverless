@@ -1,13 +1,12 @@
 import { auth } from "@/auth";
 import axios from "axios";
 import { Alert } from "../../../sst/alerts/types";
+import { API_URL } from "@/utils/constants";
 
 const fetchAlertsByUserId = (userId: string): Promise<Alert[]> => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
   return new Promise((resolve, reject) => {
     axios
-      .get(`${apiUrl}/alerts/${userId}`)
+      .get(`${API_URL}/alerts/${userId}`)
       .then((response) => resolve(response.data))
       .catch((err) => reject(err));
   });
@@ -17,11 +16,9 @@ const fetchAlertByIdApi = (
   userId: string,
   alertId: string
 ): Promise<Alert | undefined> => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
   return new Promise((resolve, reject) => {
     axios
-      .get(`${apiUrl}/alerts/${userId}/${alertId}`)
+      .get(`${API_URL}/alerts/${userId}/${alertId}`)
       .then((response) => {
         console.log(response);
         resolve(response.data);

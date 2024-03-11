@@ -9,13 +9,10 @@ import { useState } from "react";
 import { ErrorMessage } from "../common/error-message";
 import { Course } from "../../../sst/courses/types";
 
-interface AlertCreateFormProps {
-  courses: Course[];
-}
+interface AlertCreateFormProps {}
 
-export default function AlertCreateForm({
-  courses = [],
-}: AlertCreateFormProps) {
+export default function AlertCreateForm({}: AlertCreateFormProps) {
+  const courses: Course[] = [];
   const [formState, action] = useFormState(actions.createAlert, { errors: {} });
 
   const [startDate, setStartDate] = useState(today(getLocalTimeZone()));
@@ -33,8 +30,6 @@ export default function AlertCreateForm({
     setStartDate(start);
     setEndDate(end);
   };
-
-  console.log(formState.errors);
 
   return (
     <div className="w-60">

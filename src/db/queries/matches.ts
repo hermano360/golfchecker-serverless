@@ -1,13 +1,12 @@
 import { auth } from "@/auth";
 import axios from "axios";
 import { Match } from "../../../sst/matches/types";
+import { API_URL } from "@/utils/constants";
 
 const fetchMatchesByUserId = (userId: string): Promise<Match[]> => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
   return new Promise((resolve, reject) => {
     axios
-      .get(`${apiUrl}/matches/${userId}`)
+      .get(`${API_URL}/matches/${userId}`)
       .then((response) => resolve(response.data))
       .catch((err) => reject(err));
   });

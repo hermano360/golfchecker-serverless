@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import paths from "@/paths";
+import { API_URL } from "@/utils/constants";
 import axios from "axios";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -19,10 +20,9 @@ interface DeleteAlertFormState {
 }
 
 const deleteAlertById = (userId: string, alertId: string) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
   return new Promise((resolve, reject) => {
     axios
-      .delete(`${apiUrl}/alerts/${userId}/${alertId}`)
+      .delete(`${API_URL}/alerts/${userId}/${alertId}`)
       .then(function (response) {
         resolve(response.data);
       })
