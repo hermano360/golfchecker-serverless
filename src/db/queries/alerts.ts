@@ -1,30 +1,16 @@
 import { auth } from "@/auth";
-import axios from "axios";
 import { Alert } from "../../../sst/alerts/types";
 import { API_URL } from "@/utils/constants";
 
-const fetchAlertsByUserId = (userId: string): Promise<Alert[]> => {
-  return new Promise((resolve, reject) => {
-    axios
-      .get(`${API_URL}/alerts/${userId}`)
-      .then((response) => resolve(response.data))
-      .catch((err) => reject(err));
-  });
-};
-
-const fetchAlertByIdApi = (
+const fetchAlertByIdApi = async (
   userId: string,
   alertId: string
 ): Promise<Alert | undefined> => {
-  return new Promise((resolve, reject) => {
-    axios
-      .get(`${API_URL}/alerts/${userId}/${alertId}`)
-      .then((response) => {
-        console.log(response);
-        resolve(response.data);
-      })
-      .catch((err) => reject(err));
+  const response = await fetch(`${API_URL}/alerts/${userId}/${alertId}`, {
+    cache: "force-cache",
   });
+
+  return response.json();
 };
 
 export async function fetchAlertsByUser(): Promise<any[]> {
@@ -34,17 +20,22 @@ export async function fetchAlertsByUser(): Promise<any[]> {
     return [];
   }
 
-  const alerts = await fetchAlertsByUserId(session.user.id);
+  const response = await fetch(`${API_URL}/alerts/${session.user.id}`, {
+    next: {
+      revalidate: 30,
+    },
+  });
 
-  return alerts;
+  return response.json();
 }
 
-export async function fetchAlertsById(alertId: string): Promise<any> {
-  const session = await auth();
-
-  if (!session || !session.user) {
+export async function fetchAlertsById(
+  alertId: string,
+  userId?: string
+): Promise<any> {
+  if (!userId) {
     return {};
   }
 
-  return fetchAlertByIdApi(session.user.id, alertId);
+  return fetchAlertByIdApi(userId, alertId);
 }

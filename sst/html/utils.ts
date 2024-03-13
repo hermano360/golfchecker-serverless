@@ -113,7 +113,6 @@ export const extractTeeTimeEntries = (
   const teeTimeItems = parsedHtml.querySelectorAll(
     'li[ng-repeat="t in ec.teetimes"]'
   );
-  console.log(teeTimeItems);
 
   const entries = teeTimeItems
     .map((teeTimeItem) => {
@@ -126,14 +125,6 @@ export const extractTeeTimeEntries = (
       const numPlayers = extractNumPlayers(teeTimeItem);
 
       const numHoles = extractNumberOfHoles(teeTimeItem);
-
-      console.log({
-        courseId,
-        teeTime,
-        price,
-        numPlayers,
-        numHoles,
-      });
 
       return {
         courseId,

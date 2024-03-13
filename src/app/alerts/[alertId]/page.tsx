@@ -1,7 +1,7 @@
-import { fetchAlertsById } from "@/db/queries/alerts";
-import { fetchCourses } from "@/db/queries/courses";
-import { formatDateDisplay } from "@/utils/dates";
 import AlertDeleteForm from "@/components/alerts/alerts-delete-form";
+import AlertItem from "@/components/alerts/alert-item";
+import { Skeleton } from "@nextui-org/react";
+import { Suspense } from "react";
 
 interface AlertsShowPageProps {
   params: {
@@ -9,23 +9,24 @@ interface AlertsShowPageProps {
   };
 }
 
+const SampleAlert = () => {
+  return (
+    <div>
+      <div>Fun things we could do</div>
+      <Skeleton style={{ height: "90px" }} className="mb-2" />;
+    </div>
+  );
+};
+
 export default async function AlertsShowPage({ params }: AlertsShowPageProps) {
   const { alertId } = params;
-
-  const alert = await fetchAlertsById(alertId);
-  const courses = await fetchCourses();
-
-  const course = courses.find(({ id }) => id === alert.courseId);
 
   return (
     <div className="border rounded p-2 mb-2">
       <div className="mb-2">
-        {course ? <h1 className="text-lg mb-1">{course.name}</h1> : null}
-
-        <div className="text-md font-bold">{`${formatDateDisplay(
-          alert.startDate
-        )}  -  ${formatDateDisplay(alert.endDate)}`}</div>
-        <div>{`${alert.startTime}  -  ${alert.endTime}`}</div>
+        <Suspense fallback={<SampleAlert />}>
+          <AlertItem alertId={alertId} />
+        </Suspense>
       </div>
       <AlertDeleteForm alertId={alertId} />
     </div>

@@ -3,12 +3,11 @@ import { Course } from "../../../sst/courses/types";
 import { API_URL } from "@/utils/constants";
 
 const fetchCoursesFromApi = async (): Promise<Course[]> => {
-  return new Promise((resolve, reject) => {
-    axios
-      .get(`${API_URL}/courses`)
-      .then((response) => resolve(response.data))
-      .catch((err) => reject(err));
+  const response = await fetch(`${API_URL}/courses`, {
+    cache: "force-cache",
   });
+  const courses = await response.json();
+  return courses;
 };
 
 export async function fetchCourses(): Promise<Course[]> {

@@ -7,6 +7,9 @@ import { IsoTimeStamp } from "../time/types";
 import { Match, MatchWithKeys } from "./types";
 import { setLatestMatchedAt } from "../matchedAt/utils";
 import { Table } from "sst/node/table";
+import { Queue } from "sst/node/queue";
+import { sqs } from "../sqs/utils";
+import { fetchAllUsers } from "../users/utils";
 
 export const formatMatches = (
   userId: string,
@@ -70,7 +73,7 @@ export const collectMatchesFromAlerts = async (
 export const generateMatchesByUser = async (
   userId: string
 ): Promise<{ matches: Match[]; matchedAt: IsoTimeStamp }> => {
-  const alerts = await fetchAlertsByUser(userId);
+  const alerts = await fetchAlertsByUser(userId, true);
 
   const matches = await collectMatchesFromAlerts(alerts);
 
@@ -103,4 +106,22 @@ export const fetchMatchesByUser = async ({
   const matches = queryPaginationRequests<Match>(params);
 
   return matches;
+};
+
+export const generateMatches = async () => {
+  console.log("Generating new matches!");
+  const users = await fetchAllUsers();
+
+  const userMatchRequests = users.map((userId) =>
+    sqs
+      .sendMessage({
+        QueueUrl: Queue.MatchingQueue.queueUrl,
+        MessageBody: JSON.stringify({
+          userId,
+        }),
+      })
+      .promise()
+  );
+
+  await Promise.all(userMatchRequests);
 };

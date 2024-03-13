@@ -5,14 +5,14 @@ import { useFormState } from "react-dom";
 import * as actions from "@/actions";
 import { Button, Input, Select, SelectItem, Slider } from "@nextui-org/react";
 import { RangeCalendar } from "@adobe/react-spectrum";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ErrorMessage } from "../common/error-message";
 import { Course } from "../../../sst/courses/types";
+import CourseSelector from "../common/course-selector";
 
 interface AlertCreateFormProps {}
 
 export default function AlertCreateForm({}: AlertCreateFormProps) {
-  const courses: Course[] = [];
   const [formState, action] = useFormState(actions.createAlert, { errors: {} });
 
   const [startDate, setStartDate] = useState(today(getLocalTimeZone()));
@@ -34,18 +34,8 @@ export default function AlertCreateForm({}: AlertCreateFormProps) {
   return (
     <div className="w-60">
       <form action={action}>
-        <Select
-          label="Select Course"
-          name="courseId"
-          isInvalid={!!formState.errors.courseId}
-          errorMessage={formState.errors.courseId?.join(", ")}
-        >
-          {courses.map((course) => (
-            <SelectItem key={course.id} value={course.id}>
-              {course.name}
-            </SelectItem>
-          ))}
-        </Select>
+        <CourseSelector errors={formState.errors.courseId} />
+
         <Slider
           label="Number of Players"
           name="numPlayers"

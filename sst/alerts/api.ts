@@ -4,10 +4,10 @@ import { randomUUID } from "crypto";
 import {
   deleteSingleItem,
   fetchSingleItem,
-  queryPaginationRequests,
   saveSingleItem,
 } from "../dynamo/utils";
 import { Alert } from "./types";
+import { fetchAlertsByUser } from "./utils";
 
 export const fetchAlerts = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
@@ -19,18 +19,7 @@ export const fetchAlerts = ApiHandler(async (evt) => {
     };
   }
 
-  const params = {
-    TableName: Table.GolfChecker.tableName,
-    KeyConditionExpression: `PK = :PK`,
-    ExpressionAttributeValues: {
-      ":PK": `alert#userId#${userId}`,
-    },
-    Select: "SPECIFIC_ATTRIBUTES",
-    ProjectionExpression:
-      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
-  };
-
-  const alerts = await queryPaginationRequests(params);
+  const alerts = await fetchAlertsByUser(userId, true);
 
   return {
     statusCode: 200,

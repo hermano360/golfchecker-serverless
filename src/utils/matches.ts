@@ -3,6 +3,7 @@ import utc from "dayjs/plugin/utc";
 import { Match } from "../../sst/matches/types";
 import { CourseId } from "../../sst/courses/types";
 import { ClockTime, DateSlash, IsoTimeStamp } from "../../sst/time/types";
+import { CURRENT_GMT_PST_OFFSET } from "../../sst/time/utils";
 
 dayjs.extend(utc);
 
@@ -36,7 +37,10 @@ export const processMatchesByCourse = (
     if (!courseTeeTimeMapping[match.courseId]) {
       courseTeeTimeMapping[match.courseId] = {} as Sample;
     }
-    const teeTime = dayjs.utc(match.teeTime).subtract(8, "hours");
+    const teeTime = dayjs
+      .utc(match.teeTime)
+      .add(CURRENT_GMT_PST_OFFSET, "hours");
+
     const teeTimeDate = teeTime.format("MM/DD/YYYY") as DateSlash;
 
     if (!courseTeeTimeMapping[match.courseId][teeTimeDate]) {
@@ -58,14 +62,17 @@ export const processMatchesByCourse = (
       courseId,
       matches: Object.entries(teeTimeMatches).map((teeTimeMatch) => {
         const day = teeTimeMatch[0] as DateSlash;
-        const hourMatches = teeTimeMatch as IsoTimeStamp[];
+        const hourMatches = teeTimeMatch[1] as IsoTimeStamp[];
 
         return {
           day,
           times: hourMatches
             .sort((a, b) => (a > b ? 1 : -1))
             .map((hour) =>
-              dayjs.utc(hour).subtract(8, "hours").format("h:mm A")
+              dayjs
+                .utc(hour)
+                .add(CURRENT_GMT_PST_OFFSET, "hours")
+                .format("h:mm A")
             ),
         } as CourseMatch;
       }),

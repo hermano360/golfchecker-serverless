@@ -5,7 +5,6 @@ import paths from "@/paths";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import axios from "axios";
 import { Alert, AlertRequest } from "../../sst/alerts/types";
 import { ClockTime, DateDash } from "../../sst/time/types";
 import { API_URL } from "@/utils/constants";
@@ -65,25 +64,22 @@ const formatTimeToCardinality = (time: string) => {
   const [hours, minutes] = time.split(":");
 
   const parsedHours = parseInt(hours) % 12;
-  const isMorning = parsedHours < 12;
+  const isMorning = parseInt(hours) < 12;
 
   return `${parsedHours === 0 ? "12" : parsedHours}:${minutes} ${
     isMorning ? "AM" : "PM"
   }` as ClockTime;
 };
 
-const submitCreateAlert = (data: AlertRequest): Promise<Alert> => {
-  return new Promise((resolve, reject) => {
-    axios
-      .post(`${API_URL}/alerts`, data)
-      .then(function (response) {
-        resolve(response.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        reject(err);
-      });
+const submitCreateAlert = async (data: AlertRequest): Promise<Alert> => {
+  const response = await fetch(`${API_URL}/alerts`, {
+    method: "post",
+    body: JSON.stringify(data),
   });
+
+  const alert = await response.json();
+
+  return alert;
 };
 
 export async function createAlert(

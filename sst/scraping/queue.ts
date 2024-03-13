@@ -9,6 +9,7 @@ import { extractFirstValidRecord, scrapingUtility } from "./utils";
 import { setLatestUpdatedAt } from "../updatedAt/utils";
 import { SQSEvent } from "../sqs/types";
 import { ScrapeRequestType } from "./types";
+import { generateMatches } from "../matches/utils";
 
 const sqs = new AWS.SQS();
 
@@ -103,6 +104,10 @@ export const scrapeFetch = async (event: SQSEvent) => {
         Queue.FetchingQueue.queueUrl,
         record.receiptHandle
       );
+
+      // After updating database, try to generate matches for these new times
+
+      await generateMatches();
     } catch (err) {
       console.log(err);
 

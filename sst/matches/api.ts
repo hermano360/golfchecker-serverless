@@ -1,30 +1,20 @@
-import { Queue } from "sst/node/queue";
 import { ApiHandler } from "sst/node/api";
-import { sqs } from "../sqs/utils";
-import { fetchMatchesByUser } from "./utils";
+import { fetchMatchesByUser, generateMatches } from "./utils";
 import { getLatestMatchedAt } from "../matchedAt/utils";
-import { fetchAllUsers } from "../users/utils";
 
 export async function initiateMatchesFetching() {
-  const users = await fetchAllUsers();
-
-  const userMatchRequests = users.map((userId) =>
-    sqs
-      .sendMessage({
-        QueueUrl: Queue.MatchingQueue.queueUrl,
-        MessageBody: JSON.stringify({
-          userId,
-        }),
-      })
-      .promise()
-  );
-
-  await Promise.all(userMatchRequests);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ status: "Matching Sequence Initialized" }),
-  };
+  try {
+    await generateMatches();
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ status: "Matching Sequence Initialized!" }),
+    };
+  } catch (err) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
 }
 
 export const fetchMatchesByUserHandler = ApiHandler(async (evt) => {

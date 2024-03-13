@@ -54,10 +54,10 @@ export default {
         },
       });
 
-      fetchingQueue.bind([table, fetchingQueue]);
+      fetchingQueue.bind([table, fetchingQueue, matchingQueue]);
       matchingQueue.bind([table, matchingQueue]);
 
-      queue.bind([table, fetchingQueue, queue]);
+      queue.bind([table, fetchingQueue, queue, matchingQueue]);
 
       const api = new Api(stack, "api", {
         defaults: {

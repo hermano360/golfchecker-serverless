@@ -6,7 +6,7 @@ import {
   DateDash,
   DateSlash,
   IsoTimeStamp,
-  MonthName,
+  MonthMap,
   NumericalMonth,
 } from "./types";
 import { getLatestUpdatedAt } from "../updatedAt/utils";
@@ -14,22 +14,7 @@ import { getLatestUpdatedAt } from "../updatedAt/utils";
 dayjs.extend(utc);
 dayjs.extend(duration);
 
-export const MonthMap: Record<NumericalMonth, MonthName> = {
-  "01": "January",
-  "02": "February",
-  "03": "March",
-  "04": "April",
-  "05": "May",
-  "06": "June",
-  "07": "July",
-  "08": "August",
-  "09": "September",
-  "10": "October",
-  "11": "November",
-  "12": "December",
-};
-
-export const CURRENT_GMT_PST_OFFSET = -8;
+export const CURRENT_GMT_PST_OFFSET = -7;
 
 export const getPstDayToday = (): DateSlash => {
   const today = dayjs
@@ -50,7 +35,7 @@ const convertOffsetToGmtOffset = (offset = 0): string => {
 export const parseTime = (
   date: DateSlash | undefined,
   teeHourTime: ClockTime | undefined,
-  gmtOffset = -8
+  gmtOffset = CURRENT_GMT_PST_OFFSET
 ): IsoTimeStamp | undefined => {
   if (!date || !teeHourTime) {
     return;
@@ -94,20 +79,39 @@ export const minutesSinceMidnight = (time: ClockTime): number => {
   return parsedMin + calculatedHour * 60;
 };
 
+const addMinutesToDateDash = (
+  referenceDateObject: dayjs.Dayjs,
+  referenceTime: ClockTime
+) => {
+  const timeAsMinutes = minutesSinceMidnight(referenceTime);
+  return referenceDateObject
+    .add(timeAsMinutes, "minutes")
+    .subtract(CURRENT_GMT_PST_OFFSET, "hours")
+    .toISOString() as IsoTimeStamp;
+};
+
+export const getTimeStampNow = () => {
+  return dayjs
+    .utc()
+    .subtract(CURRENT_GMT_PST_OFFSET, "hours")
+    .toISOString() as IsoTimeStamp;
+};
+export const getTimeStampFromDateTime = (
+  referenceDate: DateDash,
+  referenceTime: ClockTime
+) => {
+  return addMinutesToDateDash(dayjs.utc(referenceDate), referenceTime);
+};
+
 export const generateDateTimeRangeList = (
   startTime: ClockTime,
   startDate: DateDash,
   endTime: ClockTime,
   endDate: DateDash
 ): { startsAt: IsoTimeStamp; endsAt: IsoTimeStamp }[] => {
-  console.log({ startTime, startDate, endTime, endDate });
-
   const dayDifference = Math.ceil(
     dayjs.duration(dayjs.utc(endDate).diff(dayjs.utc(startDate))).asDays()
   );
-
-  const startTimeAsMinutes = minutesSinceMidnight(startTime);
-  const endTimeAsMinutes = minutesSinceMidnight(endTime);
 
   const dateRange = Array(dayDifference + 1)
     .fill(0)
@@ -116,14 +120,8 @@ export const generateDateTimeRangeList = (
     });
 
   const dateTimeRange = dateRange.map((dateItem) => ({
-    startsAt: dateItem
-      .add(startTimeAsMinutes, "minutes")
-      .subtract(CURRENT_GMT_PST_OFFSET, "hours")
-      .toISOString() as IsoTimeStamp,
-    endsAt: dateItem
-      .add(endTimeAsMinutes, "minutes")
-      .subtract(CURRENT_GMT_PST_OFFSET, "hours")
-      .toISOString() as IsoTimeStamp,
+    startsAt: addMinutesToDateDash(dateItem, startTime),
+    endsAt: addMinutesToDateDash(dateItem, endTime),
   }));
 
   return dateTimeRange;

@@ -1,9 +1,16 @@
 import { Table } from "sst/node/table";
 import { Alert, AlertSlice } from "./types";
 import { queryPaginationRequests } from "../dynamo/utils";
-import { generateDateTimeRangeList } from "../time/utils";
+import {
+  generateDateTimeRangeList,
+  getTimeStampFromDateTime,
+  getTimeStampNow,
+} from "../time/utils";
 
-export const fetchAlertsByUser = async (userId: string): Promise<Alert[]> => {
+export const fetchAlertsByUser = async (
+  userId: string,
+  filterExpired?: boolean
+): Promise<Alert[]> => {
   const params = {
     TableName: Table.GolfChecker.tableName,
     KeyConditionExpression: `PK = :PK`,
@@ -17,7 +24,14 @@ export const fetchAlertsByUser = async (userId: string): Promise<Alert[]> => {
 
   const alerts = await queryPaginationRequests<Alert>(params);
 
-  return alerts;
+  if (!filterExpired) {
+    return alerts;
+  }
+  return alerts.filter((alert) => {
+    return (
+      getTimeStampFromDateTime(alert.endDate, alert.endTime) > getTimeStampNow()
+    );
+  });
 };
 
 export const generateAlertSlicesFromAlert = (alert: Alert): AlertSlice[] => {
