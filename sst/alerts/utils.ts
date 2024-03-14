@@ -35,7 +35,6 @@ export const fetchAlertsByUser = async (
 };
 
 export const generateAlertSlicesFromAlert = (alert: Alert): AlertSlice[] => {
-  console.log({ alert });
   const timeSegments = generateDateTimeRangeList(
     alert.startTime,
     alert.startDate,

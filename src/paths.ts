@@ -8,6 +8,9 @@ const paths = {
   alertShow(id: string) {
     return `/alerts/${id}`;
   },
+  matchesShow() {
+    return "/matches";
+  },
 };
 
 export default paths;

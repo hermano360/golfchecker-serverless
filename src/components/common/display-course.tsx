@@ -12,5 +12,5 @@ export default async function DisplayCourse({ courseId }: AlertsShowPageProps) {
 
   if (!course) return null;
 
-  return <h1 className="text-lg mb-1">{course.name}</h1>;
+  return <h1 className="text-xl mb-3 mt-3">{course.name}</h1>;
 }

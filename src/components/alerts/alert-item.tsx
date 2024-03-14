@@ -43,7 +43,6 @@ const AlertItem = ({ alertId }: AlertItemProps) => {
     fetchCourse();
   }, [fetchAlert, fetchCourse]);
 
-  console.log({ alert });
   return (
     <>
       {course && alert ? (

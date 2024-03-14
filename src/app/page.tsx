@@ -20,16 +20,20 @@ export default async function Home() {
   return (
     <div className="grid grid-cols-4 gap-4 p-4">
       <div className="col-span-3">
-        <h1 className="text-xl m-2">Your Next Alerts</h1>
-        <Suspense fallback={<SampleAlerts />}>
-          <AlertList fetchData={fetchAlertsByUser} />
-        </Suspense>
-
+        <div className="mt-3">
+          <Link href={paths.matchesShow()}>
+            <Button color="primary">View Current Matches</Button>
+          </Link>
+        </div>
         <div className="mt-3">
           <Link href={paths.alertCreate()}>
             <Button color="primary">Create a New Alert</Button>
           </Link>
         </div>
+        <h1 className="text-xl m-2">Your Next Alerts</h1>
+        <Suspense fallback={<SampleAlerts />}>
+          <AlertList fetchData={fetchAlertsByUser} />
+        </Suspense>
       </div>
     </div>
   );
