@@ -6,7 +6,7 @@ export type IsoTimeStamp =
 
 export type AmOrPm = "AM" | "PM";
 
-export type ClockTime = `${number}:${number} ${AmOrPm}`;
+export type ClockTime = `${string}:${string} ${AmOrPm}`;
 
 export type NumericalMonth =
   | "01"

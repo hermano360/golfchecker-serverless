@@ -1,4 +1,4 @@
-import { MonthMap, NumericalMonth } from "../../sst/time/types";
+import { ClockTime, MonthMap, NumericalMonth } from "../../sst/time/types";
 
 export const alertTimeFormatter = (time: number) => {
   const isMorning = time < 720;
@@ -22,4 +22,14 @@ export const formatDateDisplay = (date: string | undefined): string => {
   const day = dateSplit[2];
 
   return `${MonthMap[month]} ${parseInt(day)}, ${year}`;
+};
+
+export const getClockTime = (numericTime: number): ClockTime => {
+  const minutes = ((numericTime % 4) * 15).toString().padStart(2, "0");
+  const hours = Math.floor(numericTime / 4);
+
+  const isMorning = hours < 12;
+  const parsedTime = hours % 12 === 0 ? 12 : hours % 12;
+
+  return `${parsedTime}:${minutes} ${isMorning ? "AM" : "PM"}`;
 };

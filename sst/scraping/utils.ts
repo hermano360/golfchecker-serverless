@@ -9,7 +9,9 @@ export const fetchScraping = (
   players = 4
 ): Promise<string> => {
   const inputClicks = `const values=document.querySelectorAll('input[title="Select a course"]');${[
-    0, 1, 2, 4, 6, 7, 10, 11, 13, 15,
+    // 0, 1, 2, 4,
+    6,
+    // 7, 10, 11, 13, 15,
   ]
     .map((i) => `values[${i}].click()`)
     .join(";")}`;
