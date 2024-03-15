@@ -1,6 +1,6 @@
 import { Duration } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
-import { Api, NextjsSite, Table, Queue } from "sst/constructs";
+import { Api, NextjsSite, Table, Queue, Cron } from "sst/constructs";
 
 export default {
   config(_input) {
@@ -31,6 +31,11 @@ export default {
         },
       });
 
+      // const cron = new Cron(stack, "ScrapingCron", {
+      //   job: "sst/scraping/cron.scheduleFetching",
+      //   schedule: "cron(0/60 * * * ? *)",
+      // });
+
       const fetchingQueue = new Queue(stack, "FetchingQueue", {
         consumer: {
           function: "sst/scraping/queue.scrapeFetch",
@@ -41,6 +46,8 @@ export default {
           },
         },
       });
+
+      // cron.bind([queue]);
 
       const matchingQueue = new Queue(stack, "MatchingQueue", {
         consumer: {
