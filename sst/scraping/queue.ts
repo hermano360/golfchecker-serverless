@@ -48,22 +48,50 @@ export const scrapeRequest = async (event: SQSEvent) => {
   const { date, days } = body;
 
   const updatedAt = await setLatestUpdatedAt();
+  const dayArray = Array(days + 1).fill(0);
 
-  const queueQueries = Array(days + 1)
-    .fill(0)
-    .map((_, i) =>
-      sqs
-        .sendMessage({
-          QueueUrl: Queue.FetchingQueue.queueUrl,
-          MessageBody: JSON.stringify({
-            date: dayjs.utc(date).add(i, "days").format("MM/DD/YYYY"),
-            updatedAt,
-          }),
-        })
-        .promise()
-    );
+  const queueQueriesFirst = dayArray.map((_, i) =>
+    sqs
+      .sendMessage({
+        QueueUrl: Queue.FetchingQueue.queueUrl,
+        MessageBody: JSON.stringify({
+          date: dayjs.utc(date).add(i, "days").format("MM/DD/YYYY"),
+          updatedAt,
+          courses: ["Griffith Park - Wilson", "Griffith Park - Harding"],
+        }),
+      })
+      .promise()
+  );
+  const queueQueriesSecond = dayArray.map((_, i) =>
+    sqs
+      .sendMessage({
+        QueueUrl: Queue.FetchingQueue.queueUrl,
+        MessageBody: JSON.stringify({
+          date: dayjs.utc(date).add(i, "days").format("MM/DD/YYYY"),
+          updatedAt,
+          courses: ["Roosevelt", "Sepulveda - Balboa", "Sepulveda - Encino"],
+        }),
+      })
+      .promise()
+  );
+  const queueQueriesThird = dayArray.map((_, i) =>
+    sqs
+      .sendMessage({
+        QueueUrl: Queue.FetchingQueue.queueUrl,
+        MessageBody: JSON.stringify({
+          date: dayjs.utc(date).add(i, "days").format("MM/DD/YYYY"),
+          updatedAt,
+          courses: ["Penmar", "Rancho Park"],
+        }),
+      })
+      .promise()
+  );
 
-  await Promise.all(queueQueries);
+  await Promise.all([
+    ...queueQueriesFirst,
+    ...queueQueriesSecond,
+    ...queueQueriesThird,
+  ]);
 
   await deleteSQSMessage(
     Queue.ScrapeRequestQueue.queueUrl,
@@ -94,9 +122,9 @@ export const scrapeFetch = async (event: SQSEvent) => {
     }
 
     try {
-      const { date, updatedAt } = body;
+      const { date, updatedAt, courses } = body;
 
-      await scrapingUtility(date, updatedAt);
+      await scrapingUtility(date, updatedAt, courses);
 
       console.log("submitted entries, deleting message");
 

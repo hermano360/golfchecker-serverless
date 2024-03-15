@@ -16,13 +16,14 @@ dayjs.extend(duration);
 
 export const CURRENT_GMT_PST_OFFSET = -7;
 
-export const getPstDayToday = (): DateSlash => {
-  const today = dayjs
-    .utc()
-    .add(CURRENT_GMT_PST_OFFSET, "hours")
-    .format("MM/DD/YYYY") as DateSlash;
+export const getPstBusinessDay = (): DateSlash => {
+  const today = dayjs.utc().add(CURRENT_GMT_PST_OFFSET, "hours");
 
-  return today;
+  const pastClosingTime = today.get("hour") >= 19;
+
+  const neartestBusinessDay = pastClosingTime ? today.add(1, "day") : today;
+
+  return neartestBusinessDay.format("MM/DD/YYYY") as DateSlash;
 };
 
 const convertOffsetToGmtOffset = (offset = 0): string => {

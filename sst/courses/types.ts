@@ -8,7 +8,24 @@ export type CourseId =
   | "roosevelt"
   | "sepulvedabalboa"
   | "sepulvedaencino"
-  | "woodleylakes";
+  | "woodleylakes"
+  | "griffithparkwilson"
+  | "griffithparkharding"
+  | "hansendam"
+  | "hansendamback9"
+  | "harborpark"
+  | "losfeliz3par"
+  | "penmar"
+  | "ranchopark"
+  | "ranchoparkback9"
+  | "ranchopark3par"
+  | "roosevelt"
+  | "sepulvedabalboa"
+  | "sepulvedabalboaback9"
+  | "sepulvedaencino"
+  | "sepulvedaencinoback9"
+  | "woodleylakes"
+  | "woodleylakesback9";
 
 export type CourseName =
   | "Woodley Lakes"
@@ -20,7 +37,21 @@ export type CourseName =
   | "Rancho Park"
   | "Roosevelt"
   | "Sepulveda - Balboa"
-  | "Sepulveda - Encino";
+  | "Sepulveda - Encino"
+  | "Hansen Dam (Back 9)"
+  | "Harbor Park"
+  | "Los Feliz 3-Par"
+  | "Penmar"
+  | "Rancho Park"
+  | "Rancho Park (Back 9)"
+  | "Rancho Park 3-Par"
+  | "Roosevelt"
+  | "Sepulveda - Balboa"
+  | "Sepulveda - Balboa (Back 9)"
+  | "Sepulveda - Encino"
+  | "Sepulveda - Encino (Back 9)"
+  | "Woodley Lakes"
+  | "Woodley Lakes (Back 9)";
 
 export type Course = {
   id: CourseId;

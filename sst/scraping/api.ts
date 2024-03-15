@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { Queue } from "sst/node/queue";
 import duration from "dayjs/plugin/duration";
-import { getPstDayToday } from "../time/utils";
+import { getPstBusinessDay } from "../time/utils";
 import { sqs } from "../sqs/utils";
 
 dayjs.extend(utc);
@@ -19,10 +19,10 @@ export const initiateEntryFetching = ApiHandler(async (evt) => {
 
   const body = JSON.parse(evt.body);
 
-  const pstToday = getPstDayToday();
+  const pstToday = getPstBusinessDay();
 
   // Getting the default date to be searched (in PST) and subsequent days afterwards
-  const { date = pstToday, days = 0 } = body;
+  const { date = pstToday, days = 6 } = body;
 
   await sqs
     .sendMessage({

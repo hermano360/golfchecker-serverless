@@ -3,15 +3,20 @@ import { DateSlash, IsoTimeStamp } from "../time/types";
 import { generateEntriesFromHtml, saveEntries } from "../entries/utils";
 import { SQSRecord } from "../sqs/types";
 import { deleteSQSMessage } from "../sqs/utils";
+import { CourseName } from "../courses/types";
+import { completeCourseList } from "../courses/utils";
 
 export const fetchScraping = (
   date: DateSlash,
-  players = 4
+  players = 4,
+  courses: CourseName[] = []
 ): Promise<string> => {
+  const checkboxInputs = courses.map((course) =>
+    completeCourseList.indexOf(course)
+  );
+
   const inputClicks = `const values=document.querySelectorAll('input[title="Select a course"]');${[
-    // 0, 1, 2, 4,
-    6,
-    // 7, 10, 11, 13, 15,
+    checkboxInputs,
   ]
     .map((i) => `values[${i}].click()`)
     .join(";")}`;
@@ -163,9 +168,10 @@ export const fetchScraping = (
 
 export const scrapingUtility = async (
   date: DateSlash,
-  updatedAt: IsoTimeStamp
+  updatedAt: IsoTimeStamp,
+  courses: CourseName[]
 ) => {
-  const result = await fetchScraping(date);
+  const result = await fetchScraping(date, 4, courses);
 
   const entries = await generateEntriesFromHtml(result);
 
