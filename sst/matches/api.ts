@@ -27,16 +27,15 @@ export const fetchMatchesByUserHandler = ApiHandler(async (evt) => {
     };
   }
 
-  const matchedAt = await getLatestMatchedAt(userId);
-
-  if (!matchedAt) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ message: "Error with your request" }),
-    };
-  }
-
   try {
+    const matchedAt = await getLatestMatchedAt(userId);
+    if (!matchedAt) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: "Error with your request" }),
+      };
+    }
+
     const matches = await fetchMatchesByUser({
       userId,
       matchedAt,

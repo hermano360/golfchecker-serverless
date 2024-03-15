@@ -66,6 +66,7 @@ export async function queryPaginationRequests<Type>(
 
   let ExclusiveStartKey = undefined;
   let isItemsListEmpty = false;
+  let isItemsListComplete = false;
   let result;
 
   do {
@@ -75,7 +76,8 @@ export async function queryPaginationRequests<Type>(
     itemsCollection.push(...items);
     ExclusiveStartKey = result.LastEvaluatedKey;
     isItemsListEmpty = items.length === 0;
-  } while (ExclusiveStartKey && !isItemsListEmpty);
+    isItemsListComplete = params.Limit ? items.length >= params.Limit : false;
+  } while (ExclusiveStartKey && !isItemsListEmpty && !isItemsListComplete);
 
   return itemsCollection;
 }

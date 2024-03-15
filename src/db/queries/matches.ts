@@ -19,8 +19,6 @@ export async function fetchMatchesByUser(): Promise<any[]> {
     return [];
   }
 
-  console.log({ userId: session.user.id });
-
   const matches = await fetchMatchesByUserId(session.user.id);
 
   return matches;

@@ -103,7 +103,7 @@ export const fetchMatchesByUser = async ({
       "courseId, teeTime, numPlayers, price, numHoles, updatedAt",
   };
 
-  const matches = queryPaginationRequests<Match>(params);
+  const matches = await queryPaginationRequests<Match>(params);
 
   return matches;
 };
