@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
+import { getSession } from "@auth0/nextjs-auth0";
 import paths from "@/paths";
 import { API_URL } from "@/utils/constants";
 import axios from "axios";
@@ -48,7 +48,7 @@ export async function deleteAlert(
     };
   }
 
-  const session = await auth();
+  const session = await getSession();
   if (!session || !session.user) {
     return {
       errors: {
@@ -58,7 +58,7 @@ export async function deleteAlert(
   }
 
   try {
-    await deleteAlertById(session.user.id, alertId);
+    await deleteAlertById(session.user.sid, alertId);
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {

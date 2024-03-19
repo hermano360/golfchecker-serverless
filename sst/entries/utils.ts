@@ -2,8 +2,8 @@ import { parse } from "node-html-parser";
 import { Table } from "sst/node/table";
 import { queryPaginationRequests, writePutRequests } from "../dynamo/utils";
 import { TeeTimeEntry, TeeTimeEntryWithKeys } from "./types";
-import { IsoTimeStamp } from "../time/types";
-import { CourseId } from "../courses/types";
+import { DateSlash, IsoTimeStamp } from "../time/types";
+import { CourseId, CourseName } from "../courses/types";
 import { extractTeeTimeEntries } from "../html/utils";
 
 export const fetchEntries = async ({
@@ -47,12 +47,17 @@ export const formatEntries = (
   }));
 
 export const generateEntriesFromHtml = (
-  scrapingText: string
+  scrapingText: string,
+  data: { date: DateSlash; courses: CourseName[] }
 ): TeeTimeEntry[] => {
   const root = parse(scrapingText);
 
   const teeTimeEntries = extractTeeTimeEntries(root);
-
+  console.log(
+    `${teeTimeEntries.length} entries fetched for ${
+      data.date
+    } - ${JSON.stringify(data.courses)}`
+  );
   return teeTimeEntries;
 };
 

@@ -1,25 +1,30 @@
-import { auth } from "@/auth";
-import axios from "axios";
 import { Match } from "../../../sst/matches/types";
 import { API_URL } from "@/utils/constants";
+import { getSession } from "@auth0/nextjs-auth0";
 
-const fetchMatchesByUserId = (userId: string): Promise<Match[]> => {
-  return new Promise((resolve, reject) => {
-    axios
-      .get(`${API_URL}/matches/${userId}`)
-      .then((response) => resolve(response.data))
-      .catch((err) => reject(err));
+const fetchMatchesByUserId = async (
+  userId: string
+): Promise<Match[] | undefined> => {
+  const response = await fetch(`${API_URL}/matches/${userId}`, {
+    cache: "no-cache",
   });
+
+  return await response.json();
 };
 
 export async function fetchMatchesByUser(): Promise<any[]> {
-  const session = await auth();
+  const session = await getSession();
 
-  if (!session || !session.user) {
+  console.log({ session });
+
+  if (!session || !session.user || !session.user.sid) {
     return [];
   }
 
-  const matches = await fetchMatchesByUserId(session.user.id);
+  const matches = await fetchMatchesByUserId(session.user.sid);
 
+  if (!matches) {
+    return [];
+  }
   return matches;
 }

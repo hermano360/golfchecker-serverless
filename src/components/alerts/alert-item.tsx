@@ -6,7 +6,7 @@ import { fetchAlertsById } from "@/db/queries/alerts";
 import { formatDateDisplay } from "@/utils/dates";
 import { Course } from "../../../sst/courses/types";
 import { fetchCourses } from "@/db/queries/courses";
-import { useSession } from "next-auth/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import { Skeleton } from "@nextui-org/react";
 
 interface AlertItemProps {
@@ -17,8 +17,9 @@ const SampleAlert = () => {
   return <Skeleton style={{ height: "90px" }} className="mb-2" />;
 };
 const AlertItem = ({ alertId }: AlertItemProps) => {
-  const session = useSession();
-  const userId = session.data?.user?.id;
+  const { user } = useUser();
+  const userId = user?.sid;
+
   const [alert, setAlert] = useState<Alert | undefined>(undefined);
   const [courses, setCourses] = useState<Course[]>([]);
 
@@ -30,7 +31,6 @@ const AlertItem = ({ alertId }: AlertItemProps) => {
   }, [alertId, userId]);
 
   const fetchCourse = useCallback(async () => {
-    console.log("fetch courses");
     const response = await fetchCourses();
 
     setCourses(response);

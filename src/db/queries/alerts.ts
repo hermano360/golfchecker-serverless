@@ -1,7 +1,7 @@
-import { auth } from "@/auth";
 import { Alert } from "../../../sst/alerts/types";
 import { API_URL } from "@/utils/constants";
 
+import { getSession } from "@auth0/nextjs-auth0";
 const fetchAlertByIdApi = async (
   userId: string,
   alertId: string
@@ -14,13 +14,13 @@ const fetchAlertByIdApi = async (
 };
 
 export async function fetchAlertsByUser(): Promise<any[]> {
-  const session = await auth();
-
-  if (!session || !session.user) {
+  const session = await getSession();
+  const userId = session?.user.sid;
+  if (!session || !session.user || !session.user.sid) {
     return [];
   }
 
-  const response = await fetch(`${API_URL}/alerts/${session.user.id}`, {
+  const response = await fetch(`${API_URL}/alerts/${userId}`, {
     next: {
       revalidate: 30,
     },

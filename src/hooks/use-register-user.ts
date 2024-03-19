@@ -1,13 +1,14 @@
-import { useSession } from "next-auth/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
+
 import { useCookie } from "next-cookie";
 import { useEffect } from "react";
 
 export const useRegisterUser = () => {
-  const session = useSession();
+  const { user } = useUser();
   const cookies = useCookie();
-
-  const userId = session.data?.user?.id;
+  const userId = user?.sid;
   const nextHasAccessed = cookies.get("next-has-accessed");
+  console.log({ userId, nextHasAccessed });
 
   useEffect(() => {
     if (userId && !nextHasAccessed) {

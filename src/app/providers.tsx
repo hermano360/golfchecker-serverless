@@ -7,16 +7,20 @@ import {
   defaultTheme,
   Provider as ReactSpectrumProvider,
 } from "@adobe/react-spectrum";
+import { UserProvider } from "@auth0/nextjs-auth0/client";
+
 interface ProvidersProps extends PropsWithChildren {}
 
 export default function Providers({ children }: ProvidersProps) {
   return (
-    <SessionProvider>
-      <NextUIProvider>
-        <ReactSpectrumProvider theme={defaultTheme}>
-          {children}
-        </ReactSpectrumProvider>
-      </NextUIProvider>
-    </SessionProvider>
+    <UserProvider>
+      <SessionProvider>
+        <NextUIProvider>
+          <ReactSpectrumProvider theme={defaultTheme}>
+            {children}
+          </ReactSpectrumProvider>
+        </NextUIProvider>
+      </SessionProvider>
+    </UserProvider>
   );
 }

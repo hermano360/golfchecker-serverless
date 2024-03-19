@@ -8,24 +8,28 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@nextui-org/react";
-import { useSession } from "next-auth/react";
 import * as actions from "@/actions";
 import { useRegisterUser } from "@/hooks/use-register-user";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import Link from "next/link";
 
 export default function HeaderAuth() {
-  const session = useSession();
   useRegisterUser();
+  const { user, isLoading } = useUser();
 
-  if (session.status === "loading") {
-    return null;
-  } else if (session.data?.user) {
+  console.log({ user });
+
+  if (isLoading) {
+    return <div>Loading</div>;
+  } else if (user) {
     return (
       <Popover>
         <PopoverTrigger>
-          <Avatar src={session.data.user.image || ""} />
+          <Avatar src={user.picture || ""} />
         </PopoverTrigger>
         <PopoverContent>
           <div className="p-4">
+            {JSON.stringify(user)}
             <form action={actions.signOut}>
               <Button type="submit">Sign Out</Button>
             </form>
@@ -35,22 +39,13 @@ export default function HeaderAuth() {
     );
   } else {
     return (
-      <>
-        <NavbarItem>
-          <form action={actions.signIn}>
-            <Button type="submit" color="secondary" variant="bordered">
-              Sign Up
-            </Button>
-          </form>
-        </NavbarItem>
-        <NavbarItem>
-          <form action={actions.signIn}>
-            <Button type="submit" color="secondary" variant="bordered">
-              Sign in
-            </Button>
-          </form>
-        </NavbarItem>
-      </>
+      <NavbarItem>
+        <Link href="/api/auth/login">
+          <Button type="submit" color="secondary" variant="bordered">
+            Log in
+          </Button>
+        </Link>
+      </NavbarItem>
     );
   }
 }

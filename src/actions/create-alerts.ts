@@ -1,6 +1,5 @@
 "use server";
 
-import { auth } from "@/auth";
 import paths from "@/paths";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -10,6 +9,7 @@ import { ClockTime, DateDash } from "../../sst/time/types";
 import { API_URL } from "@/utils/constants";
 import { getClockTime } from "@/utils/dates";
 import { CourseId } from "../../sst/courses/types";
+import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
 
 const createAlertSchema = z.object({
   courseIds: z
@@ -89,7 +89,9 @@ export async function createAlerts(
     };
   }
 
-  const session = await auth();
+  const session = await getSession();
+
+  session?.user;
   if (!session || !session.user) {
     return {
       errors: {
@@ -108,8 +110,9 @@ export async function createAlerts(
     };
   }
 
+  const courseIdsData: CourseId[] = data.courseIds as CourseId[];
   try {
-    for (let courseId of data.courseIds) {
+    for (let courseId of courseIdsData) {
       const createAlertData = {
         courseId: courseId,
         startTime: getClockTime(startTime),
@@ -117,7 +120,7 @@ export async function createAlerts(
         startDate: data.startDate as DateDash,
         endDate: data.endDate as DateDash,
         numPlayers: parseInt(data.numPlayers),
-        userId: session.user.id,
+        userId: session.user.sid,
       };
 
       await submitCreateAlert({

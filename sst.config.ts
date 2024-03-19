@@ -1,6 +1,7 @@
 import { Duration } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
 import { Api, NextjsSite, Table, Queue, Cron } from "sst/constructs";
+import { acceptQueue } from "./sst/testing/queue";
 
 export default {
   config(_input) {
@@ -60,16 +61,35 @@ export default {
           },
         },
       });
+      const testReceivingQueue = new Queue(stack, "TestReceiveQueue", {
+        consumer: {
+          function: "sst/testing/queue.testReceives",
+        },
+      });
+      const testWorkQueue = new Queue(stack, "TestAcceptQueue", {
+        consumer: {
+          function: "sst/testing/queue.acceptQueue",
+        },
+      });
+
+      testReceivingQueue.bind([table, testWorkQueue, testReceivingQueue]);
 
       fetchingQueue.bind([table, fetchingQueue, matchingQueue]);
       matchingQueue.bind([table, matchingQueue]);
+      testWorkQueue.bind([table, testWorkQueue]);
 
       queue.bind([table, fetchingQueue, queue, matchingQueue]);
 
       const api = new Api(stack, "api", {
         defaults: {
           function: {
-            bind: [table, queue, matchingQueue, fetchingQueue],
+            bind: [
+              table,
+              queue,
+              matchingQueue,
+              fetchingQueue,
+              testReceivingQueue,
+            ],
           },
         },
         routes: {
@@ -91,6 +111,7 @@ export default {
           "POST /alerts": "sst/alerts/api.saveAlert",
           "GET /users": "sst/users/api.fetchAllUsersHandler",
           "GET /users/{userId}/register": "sst/users/api.saveUser",
+          "GET /test/queue": "sst/testing/api.initiateTestQueue",
         },
       });
 

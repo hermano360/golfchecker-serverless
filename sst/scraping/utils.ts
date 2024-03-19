@@ -14,6 +14,7 @@ export const fetchScraping = (
   const checkboxInputs = courses.map((course) =>
     completeCourseList.indexOf(course)
   );
+  console.log({ checkboxInputs, courses });
 
   const inputClicks = `const values=document.querySelectorAll('input[title="Select a course"]');${[
     checkboxInputs,
@@ -147,7 +148,7 @@ export const fetchScraping = (
         params: {
           api_key:
             "TV3FVBYHGSKOTC3YFJTG13WS3QSTUOQGL1LY7SGDNCK8IVBV8JU5TTUWC24VUBY4018QLWLOUCWDAJM1",
-          url: "https://cityofla.ezlinksgolf.com",
+          url: "https://cityoflapcp.ezlinksgolf.com",
           wait: "5000",
           block_resources: "false",
           premium_proxy: "true",
@@ -160,7 +161,13 @@ export const fetchScraping = (
         resolve(response.data);
       })
       .catch((err) => {
-        console.log(err);
+        console.log(
+          `There was an error with the request for ${JSON.stringify({
+            date,
+            players,
+            courses,
+          })}`
+        );
         reject(err);
       });
   });
@@ -173,7 +180,7 @@ export const scrapingUtility = async (
 ) => {
   const result = await fetchScraping(date, 4, courses);
 
-  const entries = await generateEntriesFromHtml(result);
+  const entries = await generateEntriesFromHtml(result, { date, courses });
 
   await saveEntries(entries, updatedAt);
   return { success: true };

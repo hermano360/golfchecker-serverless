@@ -139,7 +139,5 @@ export const extractTeeTimeEntries = (
         courseId && teeTime && numPlayers && price && numHoles
     ) as TeeTimeEntry[];
 
-  console.log(`${entries.length} entries fetched for ${searchDate}`);
-
   return entries;
 };

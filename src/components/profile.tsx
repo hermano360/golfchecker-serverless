@@ -1,12 +1,12 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 export default function Profile() {
-  const session = useSession();
+  const { user } = useUser();
 
-  if (session.data?.user) {
-    return <div>From client: {JSON.stringify(session.data.user)}</div>;
+  if (user) {
+    return <div>From client: {JSON.stringify(user)}</div>;
   }
   return <div>From client: user is NOT signed in</div>;
 }
