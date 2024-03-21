@@ -15,11 +15,11 @@ export default function Providers({ children }: ProvidersProps) {
   return (
     <UserProvider>
       <SessionProvider>
-        <NextUIProvider>
-          <ReactSpectrumProvider theme={defaultTheme}>
-            {children}
-          </ReactSpectrumProvider>
-        </NextUIProvider>
+        <ReactSpectrumProvider theme={defaultTheme}>
+          <NextUIProvider>
+            <div className="bg-white">{children}</div>
+          </NextUIProvider>
+        </ReactSpectrumProvider>
       </SessionProvider>
     </UserProvider>
   );

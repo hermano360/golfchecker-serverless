@@ -10,6 +10,7 @@ import { Table } from "sst/node/table";
 import { Queue } from "sst/node/queue";
 import { sqs } from "../sqs/utils";
 import { fetchAllUsers } from "../users/utils";
+import { getTimeStampNow } from "../time/utils";
 
 export const formatMatches = (
   userId: string,

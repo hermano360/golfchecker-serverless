@@ -10,6 +10,8 @@ export default async function MatchList({ fetchData }: AlertListProps) {
   const matches = await fetchData();
   const courses = await fetchCourses();
 
+  console.log({ matches, courses });
+
   const matchesByCourse = processMatchesByCourse(matches);
 
   const renderedMatches = matchesByCourse.map((entry) => {
@@ -23,7 +25,7 @@ export default async function MatchList({ fetchData }: AlertListProps) {
         {matches.map((match) => {
           const { day: teeTimeDay, times: teeTimeSlots = [] } = match;
           return (
-            <div key={`${course?.name}-${match}`}>
+            <div key={`${course?.name}-${match.day}`}>
               <h1 className="text-lg mb-1">{teeTimeDay}</h1>
               <div className="flex flex-row flex-wrap">
                 {teeTimeSlots.map((teeTimeHour) => {

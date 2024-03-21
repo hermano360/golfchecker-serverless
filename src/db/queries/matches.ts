@@ -1,3 +1,5 @@
+"use server";
+
 import { Match } from "../../../sst/matches/types";
 import { API_URL } from "@/utils/constants";
 import { getSession } from "@auth0/nextjs-auth0";
@@ -20,6 +22,8 @@ export async function fetchMatchesByUser(): Promise<any[]> {
   if (!session || !session.user || !session.user.sid) {
     return [];
   }
+
+  console.log({ id: session.user.id });
 
   const matches = await fetchMatchesByUserId(session.user.sid);
 

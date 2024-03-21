@@ -4,6 +4,8 @@ import paths from "@/paths";
 import AlertList from "@/components/alerts/alert-list";
 import { fetchAlertsByUser } from "@/db/queries/alerts";
 import { Suspense } from "react";
+import Image from "next/image";
+import HomeActionButton from "@/components/home/action-button";
 
 const SampleAlerts = () => {
   return (
@@ -18,21 +20,22 @@ const SampleAlerts = () => {
 
 export default async function Home() {
   return (
-    <div className="grid grid-cols-4 gap-4 p-4">
-      <div className="col-span-3">
-        <div className="mt-3">
-          <Link href={paths.matchesShow()}>
-            <Button color="primary">View Current Matches</Button>
-          </Link>
+    <div className="flex justify-center">
+      <div className="w-1/2 flex justify-center flex-col max-w-sm">
+        <div className="overflow-hidden rounded-full shadow-lg mb-3">
+          <Image
+            src="/main-image.png"
+            width={500}
+            height={500}
+            alt="Main Logo Of App"
+          />
         </div>
-        <div className="mt-3">
-          <Link href={paths.alertCreate()}>
-            <Button color="primary">Create a New Alert</Button>
-          </Link>
+        <div className="text-4xl font-bold text-center mb-3">Golf Checker</div>
+        <div className="text-lg text-center font-thin mb-5">
+          Find and book tee times at top golf courses
         </div>
-        <h1 className="text-xl m-2">Your Next Alerts</h1>
-        <Suspense fallback={<SampleAlerts />}>
-          <AlertList fetchData={fetchAlertsByUser} />
+        <Suspense>
+          <HomeActionButton />
         </Suspense>
       </div>
     </div>

@@ -40,7 +40,7 @@ const createAlertSchema = z.object({
 
 interface CreateAlertFormState {
   errors: {
-    courseIds?: CourseId[];
+    courseIds?: string[];
     timeRange?: string[];
     startDate?: string[];
     endDate?: string[];

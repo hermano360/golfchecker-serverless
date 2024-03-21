@@ -17,8 +17,6 @@ export default function HeaderAuth() {
   useRegisterUser();
   const { user, isLoading } = useUser();
 
-  console.log({ user });
-
   if (isLoading) {
     return <div>Loading</div>;
   } else if (user) {

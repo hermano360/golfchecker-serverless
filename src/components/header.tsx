@@ -6,7 +6,7 @@ import { Suspense } from "react";
 
 export default async function Header() {
   return (
-    <Navbar className="shadow mb-6">
+    <Navbar className="mb-6">
       <NavbarBrand className="p-0">
         <Link href="/" className="font-bold">
           Golf Checker

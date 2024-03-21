@@ -6,8 +6,8 @@ import { fetchAlertsById } from "@/db/queries/alerts";
 import { formatDateDisplay } from "@/utils/dates";
 import { Course } from "../../../sst/courses/types";
 import { fetchCourses } from "@/db/queries/courses";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { Skeleton } from "@nextui-org/react";
+import { useUserId } from "@/hooks/use-user-info";
 
 interface AlertItemProps {
   alertId: string;
@@ -17,8 +17,7 @@ const SampleAlert = () => {
   return <Skeleton style={{ height: "90px" }} className="mb-2" />;
 };
 const AlertItem = ({ alertId }: AlertItemProps) => {
-  const { user } = useUser();
-  const userId = user?.sid;
+  const userId = useUserId();
 
   const [alert, setAlert] = useState<Alert | undefined>(undefined);
   const [courses, setCourses] = useState<Course[]>([]);

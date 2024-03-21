@@ -1,14 +1,11 @@
-import { useUser } from "@auth0/nextjs-auth0/client";
-
 import { useCookie } from "next-cookie";
 import { useEffect } from "react";
+import { useUserId } from "./use-user-info";
 
 export const useRegisterUser = () => {
-  const { user } = useUser();
+  const userId = useUserId();
   const cookies = useCookie();
-  const userId = user?.sid;
   const nextHasAccessed = cookies.get("next-has-accessed");
-  console.log({ userId, nextHasAccessed });
 
   useEffect(() => {
     if (userId && !nextHasAccessed) {
