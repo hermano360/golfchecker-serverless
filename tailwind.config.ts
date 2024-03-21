@@ -16,6 +16,16 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
+      maxHeight: {
+        "1/4": "25vh",
+        "1/2": "50vh",
+        "3/4": "75vh",
+      },
+      minHeight: {
+        "1/4": "25vh",
+        "1/2": "50vh",
+        "3/4": "75vh",
+      },
     },
   },
   darkMode: "class",
