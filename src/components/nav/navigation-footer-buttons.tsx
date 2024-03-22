@@ -13,14 +13,14 @@ export default function NavigationFooterButtons() {
 
   return isProfile || isAlerts || isMatches ? (
     <ButtonGroup className="mt-3">
-      <Button color={isProfile ? "primary" : "secondary"}>
-        <Link href="/profile">Profile</Link>
-      </Button>
       <Button color={isAlerts ? "primary" : "secondary"}>
         <Link href="/alerts">Alerts</Link>
       </Button>
       <Button color={isMatches ? "primary" : "secondary"}>
         <Link href="/matches">Matches</Link>
+      </Button>
+      <Button color={isProfile ? "primary" : "secondary"}>
+        <Link href="/profile">Profile</Link>
       </Button>
     </ButtonGroup>
   ) : null;

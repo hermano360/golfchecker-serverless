@@ -17,7 +17,9 @@ const ProfileButtons = ({ url }: { url: string }) => {
 
 const AlertButtons = ({ url }: { url: string }) => {
   const isNewAlerts = url.includes("/alerts/new");
-  const isAlerts = !isNewAlerts;
+  const isSpecificAlert =
+    !isNewAlerts && url.match(/\/alerts\/[a-zA-z0-9\-]+$/);
+  const isAlerts = !isNewAlerts && !isSpecificAlert;
   return (
     <>
       <Button color={isAlerts ? "primary" : "secondary"}>

@@ -21,7 +21,7 @@ const SampleAlerts = () => {
 export default async function Home() {
   return (
     <div className="flex justify-center">
-      <div className="w-1/2 flex justify-center flex-col max-w-sm">
+      <div className="w-1/2 flex justify-center flex-col max-w-sm border border-4 rounded p-12">
         <div className="overflow-hidden rounded-full shadow-lg mb-3">
           <Image
             src="/main-image.png"
