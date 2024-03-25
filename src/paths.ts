@@ -8,6 +8,9 @@ const paths = {
   alertShow(id: string) {
     return `/alerts/${id}`;
   },
+  alerts() {
+    return `/alerts`;
+  },
   matchesShow() {
     return "/matches";
   },

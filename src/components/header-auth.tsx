@@ -7,6 +7,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Spinner,
 } from "@nextui-org/react";
 import * as actions from "@/actions";
 import { useRegisterUser } from "@/hooks/use-register-user";
@@ -18,7 +19,7 @@ export default function HeaderAuth() {
   const { user, isLoading } = useUser();
 
   if (isLoading) {
-    return <div>Loading</div>;
+    return <Spinner />;
   } else if (user) {
     return (
       <Popover>

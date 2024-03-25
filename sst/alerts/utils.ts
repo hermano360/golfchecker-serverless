@@ -6,6 +6,7 @@ import {
   getTimeStampFromDateTime,
   getTimeStampNow,
 } from "../time/utils";
+import { getKeys } from "../dynamo/getKeys";
 
 export const fetchAlertsByUser = async (
   userId: string,
@@ -15,11 +16,11 @@ export const fetchAlertsByUser = async (
     TableName: Table.GolfChecker.tableName,
     KeyConditionExpression: `PK = :PK`,
     ExpressionAttributeValues: {
-      ":PK": `alert#userId#${userId}`,
+      ":PK": getKeys.manyAlerts({ userId }).PK,
     },
     Select: "SPECIFIC_ATTRIBUTES",
     ProjectionExpression:
-      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
+      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id, allowNotification",
   };
 
   const alerts = await queryPaginationRequests<Alert>(params);

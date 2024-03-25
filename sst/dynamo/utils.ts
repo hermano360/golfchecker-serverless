@@ -82,6 +82,30 @@ export async function queryPaginationRequests<Type>(
   return itemsCollection;
 }
 
+export function generateUpdateObjects(body: Record<string, any>): {
+  UpdateExpression: string;
+  ExpressionAttributeValues: Record<string, any>;
+} {
+  const UpdateExpression = `SET ${Object.entries(body)
+    .map(([key]) => `${key} = :${key}`)
+    .join(", ")}`;
+
+  const ExpressionAttributeValues = Object.entries(body).reduce(
+    (total, entry) => {
+      const [key, value] = entry;
+      return {
+        ...total,
+        [`:${key}`]: value,
+      };
+    },
+    {}
+  );
+  return {
+    UpdateExpression,
+    ExpressionAttributeValues,
+  };
+}
+
 export async function fetchSingleItem<Type>(
   params: AWS.DynamoDB.DocumentClient.GetItemInput
 ): Promise<Type | undefined> {
@@ -95,6 +119,13 @@ export async function saveSingleItem<Type>(
   params: AWS.DynamoDB.DocumentClient.PutItemInput
 ): Promise<undefined> {
   await dynamoDb.put(params).promise();
+  return;
+}
+
+export async function editSingleItem<Type>(
+  params: AWS.DynamoDB.DocumentClient.UpdateItemInput
+): Promise<undefined> {
+  await dynamoDb.update(params).promise();
   return;
 }
 

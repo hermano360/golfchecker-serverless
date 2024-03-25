@@ -10,7 +10,7 @@ export type AlertRequest = {
   startDate: DateDash;
   endDate: DateDash;
 };
-export type Alert = AlertRequest & { id: string };
+export type Alert = AlertRequest & { id: string; allowNotification: boolean };
 
 export type AlertSlice = {
   startsAt: IsoTimeStamp;

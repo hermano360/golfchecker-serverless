@@ -29,10 +29,12 @@ export const fetchMatchesByUserHandler = ApiHandler(async (evt) => {
 
   try {
     const matchedAt = await getLatestMatchedAt(userId);
+
+    // not matched yet, return empty match list
     if (!matchedAt) {
       return {
-        statusCode: 400,
-        body: JSON.stringify({ message: "Error with your request" }),
+        statusCode: 200,
+        body: "[]",
       };
     }
 

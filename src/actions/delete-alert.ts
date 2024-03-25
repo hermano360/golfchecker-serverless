@@ -75,6 +75,6 @@ export async function deleteAlert(
     }
   }
 
-  revalidatePath(paths.home());
-  redirect(paths.home());
+  revalidatePath(paths.alerts());
+  redirect(paths.alerts());
 }

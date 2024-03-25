@@ -107,6 +107,7 @@ export default {
           "GET /matches/{userId}": "sst/matches/api.fetchMatchesByUserHandler",
           "GET /alerts/{userId}": "sst/alerts/api.fetchAlerts",
           "GET /alerts/{userId}/{alertId}": "sst/alerts/api.fetchAlertById",
+          "PUT /alerts/{userId}/{alertId}": "sst/alerts/api.editAlert",
           "DELETE /alerts/{userId}/{alertId}": "sst/alerts/api.deleteAlertById",
           "POST /alerts": "sst/alerts/api.saveAlert",
           "GET /users": "sst/users/api.fetchAllUsersHandler",

@@ -3,11 +3,14 @@ import { Table } from "sst/node/table";
 import { randomUUID } from "crypto";
 import {
   deleteSingleItem,
+  editSingleItem,
   fetchSingleItem,
   saveSingleItem,
+  generateUpdateObjects,
 } from "../dynamo/utils";
 import { Alert } from "./types";
 import { fetchAlertsByUser } from "./utils";
+import { getKeys } from "../dynamo/getKeys";
 
 export const fetchAlerts = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
@@ -19,6 +22,7 @@ export const fetchAlerts = ApiHandler(async (evt) => {
     };
   }
 
+  console.log({ userId });
   const alerts = await fetchAlertsByUser(userId, true);
 
   return {
@@ -40,10 +44,7 @@ export const deleteAlertById = ApiHandler(async (evt) => {
 
   const params = {
     TableName: Table.GolfChecker.tableName,
-    Key: {
-      PK: `alert#userId#${userId}`,
-      SK: `alertId#${alertId}`,
-    },
+    Key: getKeys.singleAlert({ userId, alertId }),
   };
   try {
     await deleteSingleItem(params);
@@ -73,13 +74,10 @@ export const fetchAlertById = ApiHandler(async (evt) => {
 
   const params = {
     TableName: Table.GolfChecker.tableName,
-    Key: {
-      PK: `alert#userId#${userId}`,
-      SK: `alertId#${alertId}`,
-    },
+    Key: getKeys.singleAlert({ userId: userId, alertId }),
     Select: "SPECIFIC_ATTRIBUTES",
     ProjectionExpression:
-      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, id",
+      "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, allowNotification, id",
   };
 
   try {
@@ -104,6 +102,39 @@ export const fetchAlertById = ApiHandler(async (evt) => {
   }
 });
 
+export const editAlert = ApiHandler(async (evt) => {
+  if (!evt.body) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
+
+  const body = JSON.parse(evt.body);
+
+  if (!body.userId) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ message: "Error with your request" }),
+    };
+  }
+
+  const alertId = body.alertId;
+
+  const params = {
+    TableName: Table.GolfChecker.tableName,
+    Key: getKeys.singleAlert({ userId: body.userId, alertId }),
+    ...generateUpdateObjects(body),
+  };
+
+  await editSingleItem(params);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(body),
+  };
+});
+
 export const saveAlert = ApiHandler(async (evt) => {
   if (!evt.body) {
     return {
@@ -126,13 +157,13 @@ export const saveAlert = ApiHandler(async (evt) => {
   const data = {
     ...body,
     id: alertId,
+    allowNotification: true,
   };
 
   const params = {
     TableName: Table.GolfChecker.tableName,
     Item: {
-      PK: `alert#userId#${body.userId}`,
-      SK: `alertId#${alertId}`,
+      ...getKeys.singleAlert({ userId: body.userId, alertId }),
       ...data,
     },
   };

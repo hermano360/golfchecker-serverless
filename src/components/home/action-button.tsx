@@ -3,12 +3,16 @@
 import { useRegisterUser } from "@/hooks/use-register-user";
 
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { Button } from "@nextui-org/react";
+import { Button, Spinner } from "@nextui-org/react";
 import Link from "next/link";
 
-const SearchButton = ({ text = "Search", disabled = false }) => (
+const SearchButton = ({
+  text = "Search",
+  isLoading = false,
+  disabled = false,
+}) => (
   <Button color="primary" fullWidth disabled={disabled}>
-    {text}
+    {isLoading ? <Spinner /> : text}
   </Button>
 );
 
@@ -19,7 +23,7 @@ export default function HomeActionButton() {
   if (isLoading) {
     return (
       <Link href="/">
-        <SearchButton text="Loading" disabled />
+        <SearchButton isLoading disabled />
       </Link>
     );
   } else if (user) {

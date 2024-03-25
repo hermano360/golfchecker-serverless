@@ -5,11 +5,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { Alert, AlertRequest } from "../../sst/alerts/types";
-import { ClockTime, DateDash } from "../../sst/time/types";
+import { DateDash } from "../../sst/time/types";
 import { API_URL } from "@/utils/constants";
 import { getClockTime } from "@/utils/dates";
 import { CourseId } from "../../sst/courses/types";
-import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { getSession } from "@auth0/nextjs-auth0";
 
 const createAlertSchema = z.object({
   courseIds: z
@@ -143,6 +143,6 @@ export async function createAlerts(
     }
   }
 
-  revalidatePath(paths.home());
-  redirect(paths.home());
+  revalidatePath(paths.alerts());
+  redirect(paths.alerts());
 }

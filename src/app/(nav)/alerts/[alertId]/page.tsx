@@ -12,7 +12,6 @@ interface AlertsShowPageProps {
 const SampleAlert = () => {
   return (
     <div>
-      <div>Fun things we could do</div>
       <Skeleton style={{ height: "90px" }} className="mb-2" />;
     </div>
   );

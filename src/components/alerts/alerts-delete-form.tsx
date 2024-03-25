@@ -7,7 +7,13 @@ import { Button } from "@nextui-org/react";
 
 import { ErrorMessage } from "../common/error-message";
 
-export default function AlertDeleteForm({ alertId }: { alertId: string }) {
+export default function AlertDeleteForm({
+  alertId,
+  handleSubmit,
+}: {
+  alertId: string;
+  handleSubmit?: () => void;
+}) {
   const [formState, action] = useFormState(
     actions.deleteAlert.bind(null, { alertId }),
     {
@@ -24,7 +30,7 @@ export default function AlertDeleteForm({ alertId }: { alertId: string }) {
     : undefined;
 
   return (
-    <form action={action}>
+    <form action={action} onSubmit={handleSubmit}>
       {alertError || formError ? (
         <ErrorMessage error={alertError || formError} />
       ) : null}
