@@ -18,7 +18,7 @@ export default function ProfileInfoForm({}: ProfileInfoFormProps) {
   return (
     <form
       action={action}
-      className="w-1/2 flex justify-center flex-col max-w-sm border border-4 rounded p-5"
+      className="w-3/4 flex justify-center flex-col max-w-lg border border-4 rounded p-5"
     >
       <div className="text-xl mb-3">Profile</div>
       <Input

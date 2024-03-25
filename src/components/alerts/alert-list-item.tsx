@@ -37,7 +37,7 @@ export default function AlertListItem({ alert }: AlertListItemProps) {
           </div>
 
           <div className={`flex flex-row`}>
-            <div>
+            <div className="mr-2">
               <AlertEditNotificationForm
                 alertId={alert.id}
                 allowNotification={alert.allowNotification}

@@ -10,8 +10,6 @@ export default async function MatchList({ fetchData }: AlertListProps) {
   const matches = await fetchData();
   const courses = await fetchCourses();
 
-  console.log({ matches, courses });
-
   const matchesByCourse = processMatchesByCourse(matches);
 
   const renderedMatches = matchesByCourse.map((entry) => {
@@ -46,5 +44,15 @@ export default async function MatchList({ fetchData }: AlertListProps) {
     );
   });
 
-  return <div className="space-y-2">{renderedMatches}</div>;
+  return (
+    <div className="space-y-2">
+      {renderedMatches}
+
+      {matchesByCourse.length === 0 && (
+        <div className="text-lg font-bold text-center mt-3">
+          Currently No Active Matches...
+        </div>
+      )}
+    </div>
+  );
 }
