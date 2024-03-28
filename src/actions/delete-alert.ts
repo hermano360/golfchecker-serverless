@@ -58,7 +58,7 @@ export async function deleteAlert(
   }
 
   try {
-    await deleteAlertById(session.user.sid, alertId);
+    await deleteAlertById(session.user.sub, alertId);
   } catch (err: unknown) {
     if (err instanceof Error) {
       return {

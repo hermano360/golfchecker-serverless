@@ -113,6 +113,8 @@ export default {
           "GET /users": "sst/users/api.fetchAllUsersHandler",
           "GET /users/{userId}/register": "sst/users/api.saveUser",
           "GET /test/queue": "sst/testing/api.initiateTestQueue",
+          "GET /profile/{userId}": "sst/profile/api.fetchProfileHandler",
+          "POST /profile": "sst/profile/api.setProfileHandler",
         },
       });
 

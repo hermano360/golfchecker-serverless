@@ -7,10 +7,10 @@ import {
   fetchSingleItem,
   saveSingleItem,
   generateUpdateObjects,
+  getKeys,
 } from "../dynamo/utils";
 import { Alert } from "./types";
 import { fetchAlertsByUser } from "./utils";
-import { getKeys } from "../dynamo/getKeys";
 
 export const fetchAlerts = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
@@ -22,7 +22,6 @@ export const fetchAlerts = ApiHandler(async (evt) => {
     };
   }
 
-  console.log({ userId });
   const alerts = await fetchAlertsByUser(userId, true);
 
   return {

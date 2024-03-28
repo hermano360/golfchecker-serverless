@@ -73,7 +73,7 @@ export async function editAlert(
     const updateAlertData = {
       alertId,
       allowNotification,
-      userId: session.user.sid,
+      userId: session.user.sub,
     };
 
     await submitUpdateAlert(updateAlertData);

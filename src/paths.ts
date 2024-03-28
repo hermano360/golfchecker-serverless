@@ -2,6 +2,9 @@ const paths = {
   home() {
     return "/";
   },
+  profile() {
+    return "/profile";
+  },
   alertCreate() {
     return "/alerts/new";
   },

@@ -6,69 +6,93 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { API_URL } from "@/utils/constants";
 import { getSession } from "@auth0/nextjs-auth0";
+import { Profile } from "../../sst/profile/types";
+
+const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
 
 const updateProfileSchema = z.object({
-  name: z
+  userName: z
     .string()
     .min(1)
     .refine(
       (value) => /^[a-zA-Z\s]+$/.test(value),
       "Please enter a valid name"
     ),
-  isSMSSelected: z.boolean(),
-  phone: z
-    .string()
-    .refine(
-      (value) => /^\(\d{3}\)-\d{3}-\d{4}$/.test(value),
-      "Please enter a phone number in the correct format"
-    ),
-  isEmailSelected: z.boolean(),
-  email: z
-    .string()
-    .refine(
-      (value) => /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(value),
-      "The email must be in valid format"
-    ),
+  smsAllowed: z.boolean(),
+  phone: z.string(),
+  emailAllowed: z.boolean(),
+  email: z.string(),
 });
 
 interface UpdateProfileFormState {
   errors: {
-    name?: string[];
-    isSMSSelected?: string[];
+    userName?: string[];
+    smsAllowed?: string[];
     phone?: string[];
-    isEmailSelected?: string[];
+    emailAllowed?: string[];
     email?: string[];
     _form?: string[];
   };
 }
 
-const submitUpdateProfile = async (data): Promise<boolean> => {
+const submitUpdateProfile = async (data: Profile): Promise<boolean> => {
   const response = await fetch(`${API_URL}/profile`, {
     method: "post",
     body: JSON.stringify(data),
   });
 
   const successful = await response.json();
-
+  console.log({ successful });
   return successful;
 };
 
 export async function updateProfile(
+  {
+    smsAllowed,
+    emailAllowed,
+  }: {
+    smsAllowed: boolean;
+    emailAllowed: boolean;
+  },
   formState: UpdateProfileFormState,
   formData: FormData
 ): Promise<UpdateProfileFormState> {
+  console.log({
+    smsAllowed: formData.get("smsAllowed"),
+    emailAllowed: formData.get("emailAllowed"),
+  });
   const result = updateProfileSchema.safeParse({
-    name: formData.get("name"),
-    isSMSSelected: formData.get("isSMSSelected"),
-    phone: formData.get("phone"),
-    isEmailSelected: formData.get("isEmailSelected"),
-    email: formData.get("email"),
+    userName: formData.get("userName"),
+    smsAllowed,
+    phone: formData.get("phone") || "",
+    emailAllowed,
+    email: formData.get("email") || "",
   });
 
   if (!result.success) {
     return {
       errors: result.error.flatten().fieldErrors,
     };
+  }
+
+  const { phone, email } = result.data;
+
+  if (smsAllowed || emailAllowed) {
+    const errors = {
+      ...(smsAllowed && !phoneRegex.test(phone)
+        ? { phone: ["Please enter a phone number in a valid format"] }
+        : {}),
+      ...(emailAllowed && !emailRegex.test(email)
+        ? { email: ["Please enter an email in a valid format"] }
+        : {}),
+    };
+
+    if (errors.phone || errors.email) {
+      return {
+        errors,
+      };
+    }
   }
 
   const session = await getSession();
@@ -86,12 +110,12 @@ export async function updateProfile(
 
   try {
     const updateProfileData = {
-      name: data.name,
-      isSMSSelected: data.isSMSSelected,
+      userName: data.userName,
+      smsAllowed: data.smsAllowed,
       phone: data.phone,
-      isEmailSelected: data.isEmailSelected,
+      emailAllowed: data.emailAllowed,
       email: data.email,
-      userId: session.user.sid,
+      userId: session.user.sub,
     };
 
     await submitUpdateProfile(updateProfileData);
@@ -111,6 +135,6 @@ export async function updateProfile(
     }
   }
 
-  revalidatePath(paths.home());
-  redirect(paths.home());
+  revalidatePath(paths.profile());
+  redirect(paths.profile());
 }

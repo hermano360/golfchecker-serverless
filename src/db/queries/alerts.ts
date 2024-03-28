@@ -2,6 +2,7 @@ import { Alert } from "../../../sst/alerts/types";
 import { API_URL } from "@/utils/constants";
 
 import { getSession } from "@auth0/nextjs-auth0";
+
 const fetchAlertByIdApi = async (
   userId: string,
   alertId: string
@@ -15,8 +16,9 @@ const fetchAlertByIdApi = async (
 
 export async function fetchAlertsByUser(): Promise<any[]> {
   const session = await getSession();
-  const userId = session?.user.sid;
-  if (!session || !session.user || !session.user.sid) {
+
+  const userId = session?.user.sub;
+  if (!session || !session.user || !session.user.sub) {
     return [];
   }
 

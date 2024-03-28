@@ -120,7 +120,7 @@ export async function createAlerts(
         startDate: data.startDate as DateDash,
         endDate: data.endDate as DateDash,
         numPlayers: parseInt(data.numPlayers),
-        userId: session.user.sid,
+        userId: session.user.sub,
       };
 
       await submitCreateAlert({

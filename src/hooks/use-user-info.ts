@@ -4,8 +4,8 @@ export const useUserId = (): string | undefined => {
   const { user } = useUser();
   let userId;
 
-  if (user?.sid) {
-    userId = user?.sid as string;
+  if (user?.sub) {
+    userId = user?.sub as string;
   }
 
   return userId;

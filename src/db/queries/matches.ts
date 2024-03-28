@@ -19,13 +19,13 @@ export async function fetchMatchesByUser(): Promise<any[]> {
 
   console.log({ session });
 
-  if (!session || !session.user || !session.user.sid) {
+  if (!session || !session.user || !session.user.sub) {
     return [];
   }
 
-  console.log({ id: session.user.sid });
+  console.log({ id: session.user.sub });
 
-  const matches = await fetchMatchesByUserId(session.user.sid);
+  const matches = await fetchMatchesByUserId(session.user.sub);
 
   if (!matches) {
     return [];

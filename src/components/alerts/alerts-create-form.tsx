@@ -52,6 +52,7 @@ export default function AlertCreateForm({}: AlertCreateFormProps) {
         label="Select Course"
         name="courseIds"
         selectionMode="multiple"
+        className="mb-3"
         isInvalid={!!formState.errors.courseIds}
         errorMessage={formState.errors.courseIds?.join(", ")}
         renderValue={(selected) => {

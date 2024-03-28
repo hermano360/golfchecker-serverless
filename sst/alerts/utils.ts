@@ -1,12 +1,11 @@
 import { Table } from "sst/node/table";
 import { Alert, AlertSlice } from "./types";
-import { queryPaginationRequests } from "../dynamo/utils";
+import { queryPaginationRequests, getKeys } from "../dynamo/utils";
 import {
   generateDateTimeRangeList,
   getTimeStampFromDateTime,
   getTimeStampNow,
 } from "../time/utils";
-import { getKeys } from "../dynamo/getKeys";
 
 export const fetchAlertsByUser = async (
   userId: string,

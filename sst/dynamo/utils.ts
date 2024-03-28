@@ -3,6 +3,18 @@ import { DynamoKeys } from "./types";
 
 export const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
+export const getKeys = {
+  singleAlert({ userId, alertId }: { userId: string; alertId: string }) {
+    return { PK: `alert#userId#${userId}`, SK: `alertId#${alertId}` };
+  },
+  manyAlerts({ userId }: { userId: string }) {
+    return { PK: `alert#userId#${userId}` };
+  },
+  singleProfile({ userId }: { userId: string }) {
+    return { PK: "profile", SK: `profile#userId#${userId}` };
+  },
+};
+
 export function sectionItemsForSaving<Type>(items: Type[]): Type[][] {
   const itemSections: Type[][] = [[]];
 
