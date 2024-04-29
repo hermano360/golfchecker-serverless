@@ -4,8 +4,8 @@ import { DynamoKeys } from "./types";
 export const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 export const getKeys = {
-  singleAlert({ userId, alertId }: { userId: string; alertId: string }) {
-    return { PK: `alert#userId#${userId}`, SK: `alertId#${alertId}` };
+  singleAlert({ userId, id }: { userId: string; id: string }) {
+    return { PK: `alert#userId#${userId}`, SK: `alertId#${id}` };
   },
   manyAlerts({ userId }: { userId: string }) {
     return { PK: `alert#userId#${userId}` };

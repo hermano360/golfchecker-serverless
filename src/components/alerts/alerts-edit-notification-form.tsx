@@ -4,9 +4,6 @@ import { useFormState } from "react-dom";
 import * as actions from "@/actions";
 import { Button } from "@nextui-org/react";
 
-import { ErrorMessage } from "../common/error-message";
-import { Alert } from "../../../sst/alerts/types";
-
 export default function AlertEditNotificationForm({
   alertId,
   allowNotification,

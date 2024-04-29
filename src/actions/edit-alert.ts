@@ -22,14 +22,13 @@ interface CreateAlertFormState {
   };
 }
 
-const submitUpdateAlert = async (data): Promise<Alert> => {
-  const response = await fetch(
-    `${API_URL}/alerts/${data.userId}/${data.alertId}`,
-    {
-      method: "put",
-      body: JSON.stringify(data),
-    }
-  );
+const submitUpdateAlert = async (
+  data: Partial<Alert>
+): Promise<Partial<Alert>> => {
+  const response = await fetch(`${API_URL}/alerts/${data.userId}/${data.id}`, {
+    method: "put",
+    body: JSON.stringify(data),
+  });
 
   const alert = await response.json();
 
@@ -71,7 +70,7 @@ export async function editAlert(
 
   try {
     const updateAlertData = {
-      alertId,
+      id: alertId,
       allowNotification,
       userId: session.user.sub,
     };

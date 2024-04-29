@@ -179,6 +179,7 @@ export const scrapingUtility = async (
   courses: CourseName[]
 ) => {
   const result = await fetchScraping(date, 4, courses);
+  console.log(result);
 
   const entries = await generateEntriesFromHtml(result, { date, courses });
 

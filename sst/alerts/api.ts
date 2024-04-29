@@ -32,9 +32,11 @@ export const fetchAlerts = ApiHandler(async (evt) => {
 
 export const deleteAlertById = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
-  const alertId = evt.pathParameters?.alertId;
+  const id = evt.pathParameters?.alertId;
 
-  if (!userId || !alertId) {
+  console.log({ userId, id });
+
+  if (!userId || !id) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Error with your request" }),
@@ -43,28 +45,28 @@ export const deleteAlertById = ApiHandler(async (evt) => {
 
   const params = {
     TableName: Table.GolfChecker.tableName,
-    Key: getKeys.singleAlert({ userId, alertId }),
+    Key: getKeys.singleAlert({ userId, id }),
   };
   try {
     await deleteSingleItem(params);
 
     return {
       statusCode: 200,
-      body: `Successfully deleted alertId ${alertId}`,
+      body: `Successfully deleted alertId ${id}`,
     };
   } catch (err) {
     return {
       statusCode: 500,
-      body: `There was an error deleting alertId ${alertId}`,
+      body: `There was an error deleting alertId ${id}`,
     };
   }
 });
 
 export const fetchAlertById = ApiHandler(async (evt) => {
   const userId = evt.pathParameters?.userId;
-  const alertId = evt.pathParameters?.alertId;
+  const id = evt.pathParameters?.id;
 
-  if (!userId || !alertId) {
+  if (!userId || !id) {
     return {
       statusCode: 400,
       body: JSON.stringify({ message: "Error with your request" }),
@@ -73,7 +75,7 @@ export const fetchAlertById = ApiHandler(async (evt) => {
 
   const params = {
     TableName: Table.GolfChecker.tableName,
-    Key: getKeys.singleAlert({ userId: userId, alertId }),
+    Key: getKeys.singleAlert({ userId: userId, id }),
     Select: "SPECIFIC_ATTRIBUTES",
     ProjectionExpression:
       "startTime, endTime, endDate, userId, courseId, startDate, numPlayers, allowNotification, id",
@@ -111,6 +113,8 @@ export const editAlert = ApiHandler(async (evt) => {
 
   const body = JSON.parse(evt.body);
 
+  console.log({ body });
+
   if (!body.userId) {
     return {
       statusCode: 400,
@@ -118,11 +122,11 @@ export const editAlert = ApiHandler(async (evt) => {
     };
   }
 
-  const alertId = body.alertId;
+  const id = body.id;
 
   const params = {
     TableName: Table.GolfChecker.tableName,
-    Key: getKeys.singleAlert({ userId: body.userId, alertId }),
+    Key: getKeys.singleAlert({ userId: body.userId, id }),
     ...generateUpdateObjects(body),
   };
 
@@ -151,18 +155,18 @@ export const saveAlert = ApiHandler(async (evt) => {
     };
   }
 
-  const alertId = randomUUID();
+  const id = randomUUID();
 
   const data = {
     ...body,
-    id: alertId,
+    id,
     allowNotification: true,
   };
 
   const params = {
     TableName: Table.GolfChecker.tableName,
     Item: {
-      ...getKeys.singleAlert({ userId: body.userId, alertId }),
+      ...getKeys.singleAlert({ userId: body.userId, id }),
       ...data,
     },
   };

@@ -1,7 +1,6 @@
 import { Duration } from "aws-cdk-lib/core";
 import { SSTConfig } from "sst";
 import { Api, NextjsSite, Table, Queue, Cron } from "sst/constructs";
-import { acceptQueue } from "./sst/testing/queue";
 
 export default {
   config(_input) {
@@ -106,8 +105,8 @@ export default {
           "GET /matches": "sst/matches/api.initiateMatchesFetching",
           "GET /matches/{userId}": "sst/matches/api.fetchMatchesByUserHandler",
           "GET /alerts/{userId}": "sst/alerts/api.fetchAlerts",
-          "GET /alerts/{userId}/{alertId}": "sst/alerts/api.fetchAlertById",
-          "PUT /alerts/{userId}/{alertId}": "sst/alerts/api.editAlert",
+          "GET /alerts/{userId}/{id}": "sst/alerts/api.fetchAlertById",
+          "PUT /alerts/{userId}/{id}": "sst/alerts/api.editAlert",
           "DELETE /alerts/{userId}/{alertId}": "sst/alerts/api.deleteAlertById",
           "POST /alerts": "sst/alerts/api.saveAlert",
           "GET /users": "sst/users/api.fetchAllUsersHandler",
