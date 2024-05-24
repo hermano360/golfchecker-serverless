@@ -114,6 +114,7 @@ export default {
           "GET /test/queue": "sst/testing/api.initiateTestQueue",
           "GET /profile/{userId}": "sst/profile/api.fetchProfileHandler",
           "POST /profile": "sst/profile/api.setProfileHandler",
+          "GET /fitness/{userHandle}": "sst/fitness/api.fetchProfile",
         },
       });
 
